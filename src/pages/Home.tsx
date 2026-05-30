@@ -479,7 +479,7 @@ export default function Home({ onNavigate }: { onNavigate: (page: string) => voi
         <div>
           <div style={{ display: 'flex', alignItems: 'baseline', flexWrap: 'wrap', gap: 7, marginBottom: 5 }}>
             <span style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)' }}>{greeting()},</span>
-            <span style={{ fontSize: 24, fontWeight: 800, color: '#f97316' }}>Triumph Store</span>
+            <span style={{ fontSize: 24, fontWeight: 800, color: '#f97316' }}>Parana Store</span>
           </div>
           <p style={{ fontSize: 13, color: 'var(--text-muted)', textTransform: 'capitalize' }}>{dateStr}</p>
         </div>

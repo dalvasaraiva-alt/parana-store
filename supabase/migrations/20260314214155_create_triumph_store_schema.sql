@@ -1,8 +1,8 @@
 /*
-  # Triumph Store ERP Schema
+  # Parana Store ERP Schema
 
   ## Overview
-  Complete database schema for Triumph Store smartwatch ERP system including products,
+  Complete database schema for Parana Store smartwatch ERP system including products,
   sales, accessories, motoboys, and logistics tracking.
 
   ## Tables Created

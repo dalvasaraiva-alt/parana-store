@@ -1,4 +1,4 @@
-# Triumph Store — ERP
+# Parana Store — ERP
 
 Sistema de gestão de vendas, estoque, logística e marketing para e-commerce.
 

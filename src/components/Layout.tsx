@@ -100,13 +100,10 @@ export default function Layout({ children, currentPage, onNavigate }: LayoutProp
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0"
                 style={{ background: ORANGE, color: '#fff' }}>
-                T
-              </div>
-              <div>
-                <p className="font-bold text-sm leading-none" style={{ color: ORANGE }}>Triumph Store</p>
-                <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>Sistema ERP</p>
-              </div>
-            </div>
+                  P
+                </div>
+                <div>
+                  <p className="font-bold text-sm leading-none" style={{ color: ORANGE }}>Parana Store</p>
 
             {/* Theme toggle */}
             <button
@@ -193,10 +190,10 @@ export default function Layout({ children, currentPage, onNavigate }: LayoutProp
           <div className="flex items-center gap-2.5 px-2 py-2 rounded-lg" style={{ background: 'var(--bg-inner)' }}>
             <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
               style={{ background: ORANGE, color: '#fff' }}>
-              TS
+              PS
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold truncate" style={{ color: 'var(--text-primary)' }}>Triumph Store</p>
+              <p className="text-xs font-semibold truncate" style={{ color: 'var(--text-primary)' }}>Parana Store</p>
               <div className="flex items-center gap-1 mt-0.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-green-400" />
                 <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Conectado</p>

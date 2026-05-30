@@ -295,9 +295,9 @@ export default function Receipt({ saleId, saleData, onClose, hideDeliveryControl
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: '6px', marginBottom: '6px', borderBottom: '2px solid #000' }}>
               {/* Esquerda: logo + empresa */}
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                <img src="/Logo2p-1.png" alt="Triumph Store" style={{ maxWidth: '115px' }} />
+                <img src="/Logo2p-1.png" alt="Parana Store" style={{ maxWidth: '115px' }} />
                 <div>
-                  <p style={{ fontSize: '11px', fontWeight: 'bold', color: '#000', marginBottom: '2px' }}>Triumph Store Smartwatches</p>
+                  <p style={{ fontSize: '11px', fontWeight: 'bold', color: '#000', marginBottom: '2px' }}>Parana Store Smartwatches</p>
                   <p style={{ fontSize: '8.5px', color: '#444', lineHeight: '1.55' }}>
                     Rua Quinze de Novembro n°106, Sala 908<br />
                     Centro - Niterói - RJ · CEP: 24020-125<br />

@@ -422,7 +422,7 @@ export default function ResumoMensal() {
 
     // ── Aba 1: Smartwatches ──────────────────────────────────────────────────
     XLSX.utils.book_append_sheet(wb, mkWs([
-      [sTitleCell(`Triumph Store — Smartwatches — ${period}`), sTitleBg()],
+      [sTitleCell(`Parana Store — Smartwatches — ${period}`), sTitleBg()],
       [mt(), mt()],
       [sSecCell('RECEITAS'), sSecBg()],
       [sLbl('Faturamento Bruto'),     sMon(totalBruto)],
@@ -457,7 +457,7 @@ export default function ResumoMensal() {
 
     // ── Aba 2: Pequenas Vendas ───────────────────────────────────────────────
     XLSX.utils.book_append_sheet(wb, mkWs([
-      [sTitleCell(`Triumph Store — Pequenas Vendas — ${period}`), sTitleBg()],
+      [sTitleCell(`Parana Store — Pequenas Vendas — ${period}`), sTitleBg()],
       [mt(), mt()],
       [sSecCell('MÉTRICAS'), sSecBg()],
       [sLbl('Nº de Vendas'),       sNum(smallSales.length)],
@@ -474,7 +474,7 @@ export default function ResumoMensal() {
 
     // ── Aba 3: Resultado Consolidado ─────────────────────────────────────────
     XLSX.utils.book_append_sheet(wb, mkWs([
-      [sTitleCell(`Triumph Store — Resultado Consolidado — ${period}`), sTitleBg()],
+      [sTitleCell(`Parana Store — Resultado Consolidado — ${period}`), sTitleBg()],
       [mt(), mt()],
       [sSecCell('FATURAMENTO'), sSecBg()],
       [sLbl('Faturamento Total (Bruto)'),  sMon(consolidadoBruto)],
@@ -497,7 +497,7 @@ export default function ResumoMensal() {
 
     // ── Aba 4: DRE ───────────────────────────────────────────────────────────
     XLSX.utils.book_append_sheet(wb, mkWs([
-      [sTitleCell(`Triumph Store — DRE — ${period}`), sTitleBg()],
+      [sTitleCell(`Parana Store — DRE — ${period}`), sTitleBg()],
       [mt(), mt()],
       [sLbl('Receita Bruta'),                                           sMon(consolidadoBruto)],
       [sLbl(`  ↳ Smartwatches (${sales.length}v)`, true),              sMon(totalBruto, true)],
@@ -526,7 +526,7 @@ export default function ResumoMensal() {
       return [sNum(i + 1, alt), sLbl(model, alt), sNum(qty, alt), sMon(lb, alt), sMon(ll, alt)];
     });
     XLSX.utils.book_append_sheet(wb, mkWs([
-      [sTitleCell(`Triumph Store — Modelos Mais Vendidos — ${period}`), sTitleBg(), sTitleBg(), sTitleBg(), sTitleBg()],
+      [sTitleCell(`Parana Store — Modelos Mais Vendidos — ${period}`), sTitleBg(), sTitleBg(), sTitleBg(), sTitleBg()],
       [mt(), mt(), mt(), mt(), mt()],
       [sColHead('#'), sColHead('Modelo'), sColHead('Qtd'), sColHead('Lucro Bruto/un'), sColHead('Lucro Líquido/un')],
       ...modelDataRows,

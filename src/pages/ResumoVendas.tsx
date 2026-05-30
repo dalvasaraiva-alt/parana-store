@@ -770,8 +770,7 @@ export default function ResumoVendas() {
               <div className="px-8 pt-10 pb-8">
                 {/* Header */}
                 <div className="text-center mb-8">
-                  <p className="text-xs font-bold tracking-[0.25em] uppercase text-orange-400 mb-1">Triumph Store</p>
-                  <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{dateLabel}</p>
+                    <p className="text-xs font-bold tracking-[0.25em] uppercase text-orange-400 mb-1">Parana Store</p>
                   <div className="mt-4 h-px" style={{ background: 'var(--border-main)' }} />
                 </div>
 
