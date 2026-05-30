@@ -104,6 +104,8 @@ export default function Layout({ children, currentPage, onNavigate }: LayoutProp
                 </div>
                 <div>
                   <p className="font-bold text-sm leading-none" style={{ color: ORANGE }}>Parana Store</p>
+                </div>
+            </div>
 
             {/* Theme toggle */}
             <button
