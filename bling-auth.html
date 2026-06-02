@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head><title>Bling Auth</title></head>
+<body>
+<h2>Aguarde...</h2>
+<div id="result"></div>
+<script>
+const code = new URLSearchParams(window.location.search).get('code');
+if (code) {
+  fetch('https://www.bling.com.br/Api/v3/oauth/token', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Basic ' + btoa('7d83b5cfbdec581b948a1e1944cec3f2d00f20b6:4059dc377027aa21cb514b6664bb32ebc99a4ecb5f64ae4898549052f004'),
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: `grant_type=authorization_code&code=${code}&redirect_uri=https://parana-store.vercel.app/bling-auth.html`
+  })
+  .then(r => r.json())
+  .then(data => {
+    document.getElementById('result').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+  });
+} else {
+  document.getElementById('result').innerHTML = 'Nenhum código encontrado';
+}
+</script>
+</body>
+</html>

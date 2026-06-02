@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { getMetaAdSpend } from '../lib/metaAds';
 import { supabase } from '../lib/supabase';
 import {
   TrendingUp, DollarSign, Target, ShoppingCart, Plus, Trash2,
