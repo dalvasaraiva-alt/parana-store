@@ -791,7 +791,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
           }
         }
       }
-      alert('Venda registrada com sucesso!');
+      try { const blingItems = saleProducts.map(sp => ({ produto: { codigo: (sp.product as any)?.model || '', descricao: ((sp.product as any)?.model || '') + ' ' + ((sp.product as any)?.color || ''), unidade: 'UN' }, quantidade: sp.quantity, valor: sp.unit_price })); await fetch(import.meta.env.VITE_SUPABASE_URL + '/functions/v1/bling-sync', { method: 'POST', headers: { 'Authorization': 'Bearer ' + import.meta.env.VITE_SUPABASE_ANON_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'create_order', order: { data: saleDate, contato: { nome: formData.customer_name }, itens: blingItems, total: totals.totalSalePrice } }) }); } catch (blingErr) { console.error('Bling:', blingErr); } alert('Venda registrada com sucesso!');
       resetForm();
       onNavigate?.('history');
     } catch (error: any) {
@@ -1833,3 +1833,4 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
     </div>
   );
 }
+
