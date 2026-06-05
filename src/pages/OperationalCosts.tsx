@@ -25,7 +25,7 @@ interface CostPayment {
   notes: string | null;
 }
 
-const PAYMENT_METHODS = ['Nubank PJ', 'Itaú PJ', 'Nubank PF', 'Cartão de Crédito'];
+const PAYMENT_METHODS = ['PJ - Bradesco', 'Cartão de Crédito'];
 const MONTHS = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 
 const getCurrentMonth = () => {
@@ -46,7 +46,7 @@ export default function OperationalCosts() {
   const [showCostForm, setShowCostForm] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState<Cost | null>(null);
   const [costForm, setCostForm] = useState({ name: '', amount: '', is_fixed: true, due_day: '' });
-  const [paymentForm, setPaymentForm] = useState({ paid_date: new Date(), payment_method: 'Nubank PJ', amount_paid: '', notes: '' });
+  const [paymentForm, setPaymentForm] = useState({ paid_date: new Date(), payment_method: 'PJ - Bradesco', amount_paid: '', notes: '' });
   const [copyPrompt, setCopyPrompt] = useState(false);
   const [copying, setCopying] = useState(false);
   const dismissedMonths = useRef<Set<string>>(new Set());
@@ -98,7 +98,7 @@ export default function OperationalCosts() {
     setShowPaymentModal(cost);
     setPaymentForm({
       paid_date: existing?.paid_date ? new Date(existing.paid_date + 'T12:00:00') : new Date(),
-      payment_method: existing?.payment_method || 'Nubank PJ',
+      payment_method: existing?.payment_method || 'PJ - Bradesco',
       amount_paid: existing?.amount_paid != null ? String(existing.amount_paid) : String(cost.amount),
       notes: existing?.notes || '',
     });
@@ -124,7 +124,7 @@ export default function OperationalCosts() {
         await supabase.from('operational_cost_payments').insert([payload]);
       }
       setShowPaymentModal(null);
-      setPaymentForm({ paid_date: new Date(), payment_method: 'Nubank PJ', amount_paid: '', notes: '' });
+      setPaymentForm({ paid_date: new Date(), payment_method: 'PJ - Bradesco', amount_paid: '', notes: '' });
       loadData();
     } catch { alert('Erro ao registrar pagamento'); }
   };
