@@ -862,27 +862,30 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
   const parsearFormulario = (texto: string) => {
     const extrair = (...labels: string[]): string => {
       for (const label of labels) {
-        const regex = new RegExp(`(?:^|\\n)\\s*${label}\\s*:?\\s*(.+)`, 'im');
+        // Regex que ignora emojis e qualquer caractere antes do label
+        // Aceita múltiplos dois-pontos e espaços em volta
+        const regex = new RegExp(`(?:^|\\n).*?${label}\\s*:+\\s*([^\\n]+)`, 'im');
         const match = texto.match(regex);
         if (match) return match[1].trim();
       }
       return '';
     };
 
+    // Extrai cada campo com suas variações (mais específico primeiro)
     const nome = extrair('NOME COMPLETO', 'Nome');
-    const rua = extrair('Rua', 'Endere[çc]o', 'Logradouro', 'End');
-    const numero = extrair('N[uú]mero', 'NÚMERO', 'Nº', 'N°', 'Num');
+    const rua = extrair('Rua', 'Endereço', 'Logradouro', 'End');
+    const numero = extrair('NÚMERO', 'Número', 'Nº', 'N°', 'Num');
     const complemento = extrair('Complemento', 'Comp');
     const bairro = extrair('Bairro');
     const cepRaw = extrair('CEP', 'Cep');
     const cpfRaw = extrair('CPF', 'Cpf');
-    const cidade = extrair('Cidade', 'CIDADE');
+    const cidade = extrair('CIDADE', 'Cidade');
     const estadoRaw = extrair('Estado', 'UF');
     const contato = extrair('CONTATO', 'Telefone', 'Contato');
-    const email = extrair('E-MAIL', 'EMAIL', 'E-mail', 'Email');
+    const email = extrair('E-MAIL (ENVIAR NF)', 'E-MAIL', 'EMAIL', 'E-mail', 'Email');
     const pagamento = extrair('FORMA DE PAGAMENTO', 'Pagamento', 'Forma de pagamento');
     const embalagem = extrair('Embalagem para presente', 'Embalagem');
-    const restricao = extrair('POSSUI RESTRIÇÃO DE HORARIO', 'Restrição');
+    const restricao = extrair('POSSUI RESTRIÇÃO DE HORARIO', 'RESTRIÇÃO DE HORARIO', 'RESTRIÇÃO', 'Restrição');
 
     const updates: Partial<typeof formData> = {};
     if (nome) updates.customer_name = nome;
@@ -890,7 +893,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
     if (numero) updates.address_number = numero;
     if (complemento) updates.address_complement = complemento.slice(0, 18);
     if (estadoRaw) updates.state = estadoRaw.replace(/[^a-zA-Z]/g, '').toUpperCase().slice(0, 2);
-    if (contato) updates.customer_phone = contato.replace(/[^\\d]/g, '');
+    if (contato) updates.customer_phone = contato.replace(/[^\d]/g, '');
     if (email) updates.customer_email = email;
     if (embalagem) {
       const sim = /^(sim|s|yes|y|verdadeiro|true|1)$/i.test(embalagem);
@@ -898,7 +901,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
     }
     if (restricao) updates.delivery_restrictions = restricao;
 
-    const cep = cepRaw.replace(/[\\s\\-\\.]/g, '');
+    const cep = cepRaw.replace(/[\s\-\.]/g, '');
     if (cep) updates.zip_code = cep;
 
     if (cpfRaw) {
