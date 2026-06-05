@@ -85,6 +85,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
     customer_name: '',
     customer_phone: '',
     customer_cpf: '',
+    customer_email: '',
     address_street: '',
     address_number: '',
     address_complement: '',
@@ -99,6 +100,8 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
     delivery_cost: 0,
     volumes: 1,
     delivery_notes: '',
+    gift_wrapping: false,
+    delivery_restrictions: '',
   });
 
   const [saleProducts, setSaleProducts] = useState<SaleProduct[]>([]);
@@ -206,6 +209,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
         customer_name:      sale.customer_name      || '',
         customer_phone:     sale.customer_phone     || '',
         customer_cpf:       sale.customer_cpf       || '',
+        customer_email:     sale.customer_email     || '',
         address_street:     sale.address_street     || '',
         address_number:     sale.address_number     || '',
         address_complement: sale.address_complement || '',
@@ -220,6 +224,8 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
         delivery_cost:      sale.delivery_cost      || 0,
         volumes:            sale.volumes            || 1,
         delivery_notes:     sale.delivery_notes     || '',
+        gift_wrapping:      sale.gift_wrapping      || false,
+        delivery_restrictions: sale.delivery_restrictions || '',
       });
       setCitySearch(sale.city || '');
       setNeighborhoodSearch(sale.neighborhood || '');
@@ -639,6 +645,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
           customer_name:      formData.customer_name,
           customer_phone:     formData.customer_phone  || null,
           customer_cpf:       formData.customer_cpf    ? cleanCpf(formData.customer_cpf) : null,
+          customer_email:     formData.customer_email  || null,
           address_street:     formData.address_street  || null,
           address_number:     formData.address_number  || null,
           address_complement: formData.address_complement || null,
@@ -663,6 +670,8 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
           volumes:            formData.volumes,
           manual_items:       manualItems.length > 0 ? manualItems : null,
           delivery_notes:     formData.delivery_notes.trim() || null,
+          gift_wrapping:      formData.gift_wrapping,
+          delivery_restrictions: formData.delivery_restrictions.trim() || null,
         }).eq('id', editSaleId);
         if (updateErr) throw updateErr;
 
@@ -680,6 +689,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
             customer_name: formData.customer_name,
             customer_phone: formData.customer_phone || null,
             customer_cpf: formData.customer_cpf ? cleanCpf(formData.customer_cpf) : null,
+            customer_email: formData.customer_email || null,
             address_street: formData.address_street || null,
             address_number: formData.address_number || null,
             address_complement: formData.address_complement || null,
@@ -704,6 +714,8 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
             volumes: formData.volumes,
             manual_items: manualItems.length > 0 ? manualItems : null,
             delivery_notes: formData.delivery_notes.trim() || null,
+            gift_wrapping: formData.gift_wrapping,
+            delivery_restrictions: formData.delivery_restrictions.trim() || null,
             payment_status: paymentStatus,
             status: 'em_separacao',
             sale_date: saleDate + 'T' + new Date().toISOString().split('T')[1],
@@ -857,15 +869,20 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
       return '';
     };
 
-    const nome = extrair('Nome');
+    const nome = extrair('NOME COMPLETO', 'Nome');
     const rua = extrair('Rua', 'Endere[çc]o', 'Logradouro', 'End');
-    const numero = extrair('N[uú]mero', 'Nº', 'N°', 'Num');
+    const numero = extrair('N[uú]mero', 'NÚMERO', 'Nº', 'N°', 'Num');
     const complemento = extrair('Complemento', 'Comp');
     const bairro = extrair('Bairro');
     const cepRaw = extrair('CEP', 'Cep');
     const cpfRaw = extrair('CPF', 'Cpf');
-    const cidade = extrair('Cidade');
+    const cidade = extrair('Cidade', 'CIDADE');
     const estadoRaw = extrair('Estado', 'UF');
+    const contato = extrair('CONTATO', 'Telefone', 'Contato');
+    const email = extrair('E-MAIL', 'EMAIL', 'E-mail', 'Email');
+    const pagamento = extrair('FORMA DE PAGAMENTO', 'Pagamento', 'Forma de pagamento');
+    const embalagem = extrair('Embalagem para presente', 'Embalagem');
+    const restricao = extrair('POSSUI RESTRIÇÃO DE HORARIO', 'Restrição');
 
     const updates: Partial<typeof formData> = {};
     if (nome) updates.customer_name = nome;
@@ -873,8 +890,15 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
     if (numero) updates.address_number = numero;
     if (complemento) updates.address_complement = complemento.slice(0, 18);
     if (estadoRaw) updates.state = estadoRaw.replace(/[^a-zA-Z]/g, '').toUpperCase().slice(0, 2);
+    if (contato) updates.customer_phone = contato.replace(/[^\\d]/g, '');
+    if (email) updates.customer_email = email;
+    if (embalagem) {
+      const sim = /^(sim|s|yes|y|verdadeiro|true|1)$/i.test(embalagem);
+      updates.gift_wrapping = sim;
+    }
+    if (restricao) updates.delivery_restrictions = restricao;
 
-    const cep = cepRaw.replace(/[\s\-\.]/g, '');
+    const cep = cepRaw.replace(/[\\s\\-\\.]/g, '');
     if (cep) updates.zip_code = cep;
 
     if (cpfRaw) {
@@ -899,6 +923,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
       customer_name: '',
       customer_phone: '',
       customer_cpf: '',
+      customer_email: '',
       address_street: '',
       address_number: '',
       address_complement: '',
@@ -913,6 +938,8 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
       delivery_cost: 0,
       volumes: 1,
       delivery_notes: '',
+      gift_wrapping: false,
+      delivery_restrictions: '',
     });
     setSaleProducts([]);
     setSaleAccessories([]);
@@ -1218,7 +1245,47 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
         {/* Customer & Payment Info - Compact */}
         <div className="grid md:grid-cols-2 gap-6">
           <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-            <h2 className="text-lg font-bold mb-4">Cliente</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-bold">Cliente</h2>
+              <button
+                type="button"
+                onClick={() => setShowPasteForm(v => !v)}
+                className="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg transition-colors font-semibold"
+              >
+                📋 Colar WhatsApp
+              </button>
+            </div>
+
+            {showPasteForm && (
+              <div className="mb-4 p-3 bg-gray-900 rounded-lg border border-orange-500">
+                <p className="text-xs text-gray-400 mb-2">Cole a resposta do cliente do WhatsApp com o formato:</p>
+                <textarea
+                  autoFocus
+                  rows={6}
+                  placeholder="NOME COMPLETO: ...&#10;CPF: ...&#10;CIDADE: ...&#10;CEP: ...&#10;NÚMERO: ...&#10;CONTATO: ...&#10;E-MAIL: ...&#10;FORMA DE PAGAMENTO: ...&#10;Embalagem para presente? ...&#10;POSSUI RESTRIÇÃO DE HORARIO? ..."
+                  onPaste={(e) => {
+                    e.preventDefault();
+                    parsearFormulario(e.clipboardData.getData('text'));
+                  }}
+                  onChange={(e) => {
+                    if (e.currentTarget.textContent) {
+                      // Allow manual pasting
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && e.ctrlKey) {
+                      const text = e.currentTarget.value;
+                      if (text.trim()) {
+                        parsearFormulario(text);
+                      }
+                    }
+                  }}
+                  className="w-full bg-gray-700 rounded-lg px-3 py-2 border border-gray-600 focus:border-orange-500 focus:outline-none text-sm resize-none placeholder-gray-600"
+                />
+                <p className="text-xs text-gray-500 mt-2">💡 Cole ou pressione Ctrl+Enter para extrair dados</p>
+              </div>
+            )}
+
             <div className="space-y-3">
               <input
                 type="text"
@@ -1233,6 +1300,13 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
                 placeholder="Telefone (opcional)"
                 value={formData.customer_phone}
                 onChange={(e) => setFormData({ ...formData, customer_phone: e.target.value })}
+                className="w-full bg-gray-700 rounded-lg px-4 py-2 border border-gray-600 focus:border-orange-500 focus:outline-none"
+              />
+              <input
+                type="email"
+                placeholder="E-mail (opcional - para NF)"
+                value={formData.customer_email}
+                onChange={(e) => setFormData({ ...formData, customer_email: e.target.value })}
                 className="w-full bg-gray-700 rounded-lg px-4 py-2 border border-gray-600 focus:border-orange-500 focus:outline-none"
               />
 
@@ -1694,7 +1768,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
               />
             )}
           </div>
-          <div className="mt-4">
+          <div className="mt-4 space-y-3">
             <input
               type="text"
               placeholder="📝 Observações (ex: Deixar na portaria, Entregar para Bernardo)"
@@ -1703,6 +1777,23 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
               className="w-full bg-gray-700 rounded-lg px-4 py-2 border border-gray-600 focus:border-orange-500 focus:outline-none text-sm"
               maxLength={200}
             />
+            <input
+              type="text"
+              placeholder="🕐 Restrição de horário (ex: Entregar após 14h)"
+              value={formData.delivery_restrictions}
+              onChange={(e) => setFormData({ ...formData, delivery_restrictions: e.target.value })}
+              className="w-full bg-gray-700 rounded-lg px-4 py-2 border border-gray-600 focus:border-orange-500 focus:outline-none text-sm"
+              maxLength={100}
+            />
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.gift_wrapping}
+                onChange={(e) => setFormData({ ...formData, gift_wrapping: e.target.checked })}
+                className="w-4 h-4 bg-gray-700 border border-gray-600 rounded focus:border-orange-500 cursor-pointer"
+              />
+              <span className="text-gray-300 text-sm">🎁 Embalagem para presente</span>
+            </label>
           </div>
         </div>
 
