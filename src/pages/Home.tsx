@@ -200,6 +200,109 @@ function MonthCard({ icon: Icon, iconColor, label, value, sub, children }: {
   );
 }
 
+function DailyTargetsCard({ todayRevenue }: { todayRevenue: number }) {
+  const targetBronze = 2000;
+  const targetSilver = 3000;
+  const targetGold = 4500;
+
+  const reachedBronze = todayRevenue >= targetBronze;
+  const reachedSilver = todayRevenue >= targetSilver;
+  const reachedGold = todayRevenue >= targetGold;
+
+  const pctToBronze = Math.min((todayRevenue / targetBronze) * 100, 100);
+  const pctToSilver = Math.min((todayRevenue / targetSilver) * 100, 100);
+  const pctToGold = Math.min((todayRevenue / targetGold) * 100, 100);
+
+  return (
+    <div style={{
+      background: 'var(--bg-card)',
+      border: '1px solid var(--border-main)',
+      borderRadius: 16,
+      padding: '20px 22px',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: 14 }}>
+        <div style={{
+          width: 40, height: 40, borderRadius: 11,
+          background: 'rgba(255, 215, 0, 0.12)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <Target size={20} style={{ color: '#FFD700' }} />
+        </div>
+      </div>
+
+      <p style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 700, marginBottom: 2 }}>
+        Metas do Dia
+      </p>
+      <p style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1.2, marginBottom: 16 }}>
+        {fmtR(todayRevenue)}
+      </p>
+
+      {/* Bronze */}
+      <div style={{ marginBottom: 14 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#CD7F32' }}>🥉 Bronze</span>
+            {reachedBronze && <span style={{ fontSize: 9, fontWeight: 700, color: '#22c55e', background: '#22c55e20', padding: '2px 6px', borderRadius: 4 }}>✓ ATINGIDA</span>}
+          </div>
+          <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)' }}>{fmtR(targetBronze)}</span>
+        </div>
+        <div style={{ height: 5, borderRadius: 4, background: 'var(--bg-inner)', overflow: 'hidden' }}>
+          <div style={{
+            width: `${pctToBronze}%`, height: '100%',
+            background: '#CD7F32', borderRadius: 4,
+            transition: 'width 0.8s ease',
+          }} />
+        </div>
+        <p style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 4 }}>
+          {pctToBronze.toFixed(0)}% — Faltam {fmtR(Math.max(0, targetBronze - todayRevenue))}
+        </p>
+      </div>
+
+      {/* Prata */}
+      <div style={{ marginBottom: 14 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#C0C0C0' }}>🥈 Prata</span>
+            {reachedSilver && <span style={{ fontSize: 9, fontWeight: 700, color: '#22c55e', background: '#22c55e20', padding: '2px 6px', borderRadius: 4 }}>✓ ATINGIDA</span>}
+          </div>
+          <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)' }}>{fmtR(targetSilver)}</span>
+        </div>
+        <div style={{ height: 5, borderRadius: 4, background: 'var(--bg-inner)', overflow: 'hidden' }}>
+          <div style={{
+            width: `${pctToSilver}%`, height: '100%',
+            background: '#C0C0C0', borderRadius: 4,
+            transition: 'width 0.8s ease',
+          }} />
+        </div>
+        <p style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 4 }}>
+          {pctToSilver.toFixed(0)}% — Faltam {fmtR(Math.max(0, targetSilver - todayRevenue))}
+        </p>
+      </div>
+
+      {/* Ouro */}
+      <div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#FFD700' }}>🥇 Ouro</span>
+            {reachedGold && <span style={{ fontSize: 9, fontWeight: 700, color: '#22c55e', background: '#22c55e20', padding: '2px 6px', borderRadius: 4 }}>✓ ATINGIDA</span>}
+          </div>
+          <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)' }}>{fmtR(targetGold)}+</span>
+        </div>
+        <div style={{ height: 5, borderRadius: 4, background: 'var(--bg-inner)', overflow: 'hidden' }}>
+          <div style={{
+            width: `${pctToGold}%`, height: '100%',
+            background: '#FFD700', borderRadius: 4,
+            transition: 'width 0.8s ease',
+          }} />
+        </div>
+        <p style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 4 }}>
+          {pctToGold.toFixed(0)}% — Faltam {fmtR(Math.max(0, targetGold - todayRevenue))}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function ForecastCard({ todayRevenue, historicalAvg, dayName, dayCount }: {
   todayRevenue: number; historicalAvg: number; dayName: string; dayCount: number;
 }) {
@@ -608,6 +711,11 @@ export default function Home({ onNavigate }: { onNavigate: (page: string) => voi
           dayName={forecast.dayName}
           dayCount={forecast.dayCount}
         />
+      </div>
+
+      {/* ── Metas de Faturamento Diário ────────────────────────────────── */}
+      <div style={{ marginBottom: 28 }}>
+        <DailyTargetsCard todayRevenue={day.revenue} />
       </div>
 
       {/* ── Seção 2 — Gráfico 7 dias ────────────────────────────────────── */}
