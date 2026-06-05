@@ -21,6 +21,9 @@ Deno.serve(async (req: Request) => {
     if (!FB_TOKEN || !FB_ACCOUNT) throw new Error("Credenciais do Facebook não configuradas");
     if (!SUPABASE_URL || !SUPABASE_KEY) throw new Error("Credenciais do Supabase não configuradas");
 
+    // Formata o Account ID com prefixo 'act_'
+    const accountId = FB_ACCOUNT.startsWith('act_') ? FB_ACCOUNT : `act_${FB_ACCOUNT}`;
+
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
     const { period, dateStart: customStart, dateEnd: customEnd } = await req.json();
 
@@ -31,7 +34,7 @@ Deno.serve(async (req: Request) => {
     let dateEnd: string = brazilToday;
 
     const fields = 'spend,impressions,clicks,reach,cpm,cpc,ctr';
-    const accountBase = `https://graph.facebook.com/v25.0/${FB_ACCOUNT}/insights`;
+    const accountBase = `https://graph.facebook.com/v25.0/${accountId}/insights`;
     const authParams = `access_token=${FB_TOKEN}&level=account`;
 
     let fbUrl: string;

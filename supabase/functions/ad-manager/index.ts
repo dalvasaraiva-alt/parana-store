@@ -19,6 +19,9 @@ Deno.serve(async (req: Request) => {
     const FB_ACCOUNT = Deno.env.get("FB_AD_ACCOUNT_ID");
     if (!FB_TOKEN || !FB_ACCOUNT) throw new Error("Credenciais do Facebook não configuradas");
 
+    // Formata o Account ID com prefixo 'act_'
+    const accountId = FB_ACCOUNT.startsWith('act_') ? FB_ACCOUNT : `act_${FB_ACCOUNT}`;
+
     const body   = await req.json();
     const { action } = body;
 
@@ -107,13 +110,13 @@ Deno.serve(async (req: Request) => {
 
     // ── CAMPAIGNS ─────────────────────────────────────────────────────────────
     if (level === "campaign") {
-      const insUrl = `${BASE}/${FB_ACCOUNT}/insights?level=campaign&fields=campaign_id,campaign_name,${metricFields}&time_range=${timeRange}&limit=50&access_token=${FB_TOKEN}`;
+      const insUrl = `${BASE}/${accountId}/insights?level=campaign&fields=campaign_id,campaign_name,${metricFields}&time_range=${timeRange}&limit=50&access_token=${FB_TOKEN}`;
 
       // Entity URL: optionally filter by status
-      let entUrl = `${BASE}/${FB_ACCOUNT}/campaigns?fields=id,name,status,effective_status,daily_budget,lifetime_budget&limit=100&access_token=${FB_TOKEN}`;
+      let entUrl = `${BASE}/${accountId}/campaigns?fields=id,name,status,effective_status,daily_budget,lifetime_budget&limit=100&access_token=${FB_TOKEN}`;
       if (statusFilter === "active_paused") {
         const f = encodeURIComponent(JSON.stringify([{ field: "effective_status", operator: "IN", value: ["ACTIVE", "PAUSED"] }]));
-        entUrl = `${BASE}/${FB_ACCOUNT}/campaigns?fields=id,name,status,effective_status,daily_budget,lifetime_budget&filtering=${f}&limit=100&access_token=${FB_TOKEN}`;
+        entUrl = `${BASE}/${accountId}/campaigns?fields=id,name,status,effective_status,daily_budget,lifetime_budget&filtering=${f}&limit=100&access_token=${FB_TOKEN}`;
       }
 
       const [inR, enR] = await Promise.all([fetch(insUrl), fetch(entUrl)]);
