@@ -77,6 +77,9 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
   const [cpfError, setCpfError] = useState('');
   const [cpfDisplay, setCpfDisplay] = useState('');
   const [showPasteForm, setShowPasteForm] = useState(false);
+  const [whatsappModalOpen, setWhatsappModalOpen] = useState(false);
+  const [whatsappText, setWhatsappText] = useState('');
+  const [whatsappPreview, setWhatsappPreview] = useState<Partial<typeof formData> | null>(null);
 
   const novaSaleRef = useRef<HTMLDivElement>(null);
   const originalItemsRef = useRef<{ product_id: string; quantity: number }[]>([]);
@@ -859,7 +862,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
     }
   };
 
-  const parsearFormulario = (texto: string) => {
+  const extractFormularioData = (texto: string): Partial<typeof formData> => {
     const extrair = (...labels: string[]): string => {
       for (const label of labels) {
         // Regex que ignora emojis e qualquer caractere antes do label
@@ -905,20 +908,57 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
     if (cep) updates.zip_code = cep;
 
     if (cpfRaw) {
-      const formatted = formatCpf(cpfRaw);
-      setCpfDisplay(formatted);
       const cleaned = cleanCpf(cpfRaw);
       updates.customer_cpf = cleaned;
-      setCpfError(cleaned.length === 11 && !validateCpf(cleaned) ? 'CPF inválido' : '');
     }
 
-    setFormData(prev => ({ ...prev, ...updates }));
+    // Armazenar dados extras para referência (não incluem no formData)
     if (bairro) setNeighborhoodSearch(bairro);
     if (cidade) setCitySearch(cidade);
 
+    return updates;
+  };
+
+  const parsearFormulario = (texto: string) => {
+    const updates = extractFormularioData(texto);
+    const cep = updates.zip_code;
+
+    if (updates.customer_cpf) {
+      const formatted = formatCpf(updates.customer_cpf);
+      setCpfDisplay(formatted);
+      setCpfError(updates.customer_cpf.length === 11 && !validateCpf(updates.customer_cpf) ? 'CPF inválido' : '');
+    }
+
+    setFormData(prev => ({ ...prev, ...updates }));
     if (cep) handleCepChange(cep);
 
     setShowPasteForm(false);
+  };
+
+  const handleWhatsappExtract = () => {
+    if (!whatsappText.trim()) return;
+    const extracted = extractFormularioData(whatsappText);
+    setWhatsappPreview(extracted);
+  };
+
+  const handleWhatsappConfirm = () => {
+    if (!whatsappPreview) return;
+    
+    // Aplicar dados ao formulário
+    const updates = whatsappPreview;
+    if (updates.customer_cpf) {
+      const formatted = formatCpf(updates.customer_cpf);
+      setCpfDisplay(formatted);
+      setCpfError(updates.customer_cpf.length === 11 && !validateCpf(updates.customer_cpf) ? 'CPF inválido' : '');
+    }
+
+    setFormData(prev => ({ ...prev, ...updates }));
+    if (updates.zip_code) handleCepChange(updates.zip_code);
+
+    // Fechar modal
+    setWhatsappModalOpen(false);
+    setWhatsappText('');
+    setWhatsappPreview(null);
   };
 
   const resetForm = () => {
@@ -1252,7 +1292,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
               <h2 className="text-lg font-bold">Cliente</h2>
               <button
                 type="button"
-                onClick={() => setShowPasteForm(v => !v)}
+                onClick={() => setWhatsappModalOpen(true)}
                 className="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg transition-colors font-semibold"
               >
                 📋 Colar WhatsApp
@@ -1924,6 +1964,189 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
           </button>
         </div>
       </form>
+
+      {/* Modal WhatsApp */}
+      {whatsappModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 rounded-lg border border-gray-700 max-w-2xl w-full max-h-[90vh] flex flex-col">
+            {/* Header */}
+            <div className="border-b border-gray-700 px-6 py-4 flex items-center justify-between">
+              <h2 className="text-xl font-bold">📋 Cole a Mensagem do WhatsApp</h2>
+              <button
+                type="button"
+                onClick={() => {
+                  setWhatsappModalOpen(false);
+                  setWhatsappText('');
+                  setWhatsappPreview(null);
+                }}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              {!whatsappPreview ? (
+                <>
+                  <p className="text-sm text-gray-400">Cole a mensagem completa do cliente com o formato:</p>
+                  <div className="bg-gray-900 rounded p-3 border border-gray-700 text-xs text-gray-500 max-h-32 overflow-y-auto">
+                    <pre className="whitespace-pre-wrap">🖊️NOME COMPLETO: João Silva
+📃CPF: 123.456.789-00
+🌃CIDADE: Curitiba
+🏠CEP: 80000-000
+🏡NÚMERO: 123
+☎️CONTATO: (41) 98765-4321
+📥 E-MAIL (ENVIAR NF): joao@email.com
+💰FORMA DE PAGAMENTO: Cartão
+🎁 Embalagem para presente? Sim
+⏰POSSUI RESTRIÇÃO DE HORARIO? Após 14h</pre>
+                  </div>
+                  <textarea
+                    autoFocus
+                    value={whatsappText}
+                    onChange={(e) => setWhatsappText(e.currentTarget.value)}
+                    onPaste={(e) => {
+                      e.preventDefault();
+                      const text = e.clipboardData.getData('text');
+                      setWhatsappText(text);
+                    }}
+                    rows={8}
+                    placeholder="Cole a mensagem do cliente aqui..."
+                    className="w-full bg-gray-700 rounded-lg px-4 py-3 border border-gray-600 focus:border-orange-500 focus:outline-none text-sm resize-none"
+                  />
+                </>
+              ) : (
+                <>
+                  <p className="text-sm font-semibold text-orange-400">✓ Dados Extraídos da Mensagem</p>
+                  <div className="bg-gray-900 rounded-lg p-4 space-y-3 max-h-96 overflow-y-auto border border-gray-700">
+                    {whatsappPreview.customer_name && (
+                      <div className="flex justify-between items-start">
+                        <span className="text-gray-400">🖊️ Nome:</span>
+                        <span className="text-white font-medium">{whatsappPreview.customer_name}</span>
+                      </div>
+                    )}
+                    {whatsappPreview.customer_cpf && (
+                      <div className="flex justify-between items-start">
+                        <span className="text-gray-400">📃 CPF:</span>
+                        <span className="text-white font-medium">{formatCpf(whatsappPreview.customer_cpf)}</span>
+                      </div>
+                    )}
+                    {whatsappPreview.customer_phone && (
+                      <div className="flex justify-between items-start">
+                        <span className="text-gray-400">☎️ Telefone:</span>
+                        <span className="text-white font-medium">{whatsappPreview.customer_phone}</span>
+                      </div>
+                    )}
+                    {whatsappPreview.customer_email && (
+                      <div className="flex justify-between items-start">
+                        <span className="text-gray-400">📥 E-mail:</span>
+                        <span className="text-white font-medium truncate">{whatsappPreview.customer_email}</span>
+                      </div>
+                    )}
+                    {whatsappPreview.city && (
+                      <div className="flex justify-between items-start">
+                        <span className="text-gray-400">🌃 Cidade:</span>
+                        <span className="text-white font-medium">{whatsappPreview.city}</span>
+                      </div>
+                    )}
+                    {whatsappPreview.zip_code && (
+                      <div className="flex justify-between items-start">
+                        <span className="text-gray-400">🏠 CEP:</span>
+                        <span className="text-white font-medium">{whatsappPreview.zip_code}</span>
+                      </div>
+                    )}
+                    {whatsappPreview.address_number && (
+                      <div className="flex justify-between items-start">
+                        <span className="text-gray-400">🏡 Número:</span>
+                        <span className="text-white font-medium">{whatsappPreview.address_number}</span>
+                      </div>
+                    )}
+                    {whatsappPreview.address_street && (
+                      <div className="flex justify-between items-start">
+                        <span className="text-gray-400">🛣️ Rua:</span>
+                        <span className="text-white font-medium">{whatsappPreview.address_street}</span>
+                      </div>
+                    )}
+                    {whatsappPreview.state && (
+                      <div className="flex justify-between items-start">
+                        <span className="text-gray-400">📍 Estado:</span>
+                        <span className="text-white font-medium">{whatsappPreview.state}</span>
+                      </div>
+                    )}
+                    {whatsappPreview.gift_wrapping !== undefined && (
+                      <div className="flex justify-between items-start">
+                        <span className="text-gray-400">🎁 Embalagem:</span>
+                        <span className="text-white font-medium">{whatsappPreview.gift_wrapping ? '✓ Sim' : '✗ Não'}</span>
+                      </div>
+                    )}
+                    {whatsappPreview.delivery_restrictions && (
+                      <div className="flex justify-between items-start">
+                        <span className="text-gray-400">⏰ Restrições:</span>
+                        <span className="text-white font-medium">{whatsappPreview.delivery_restrictions}</span>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="border-t border-gray-700 px-6 py-4 flex gap-3 justify-end">
+              {!whatsappPreview ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setWhatsappModalOpen(false);
+                      setWhatsappText('');
+                    }}
+                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors font-medium"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleWhatsappExtract}
+                    disabled={!whatsappText.trim()}
+                    className="px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg transition-colors font-medium text-white"
+                  >
+                    Extrair Dados
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setWhatsappPreview(null)}
+                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors font-medium"
+                  >
+                    ← Voltar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setWhatsappModalOpen(false);
+                      setWhatsappText('');
+                      setWhatsappPreview(null);
+                    }}
+                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors font-medium"
+                  >
+                    Fechar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleWhatsappConfirm}
+                    className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors font-medium text-white"
+                  >
+                    ✓ Confirmar e Preencher
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
