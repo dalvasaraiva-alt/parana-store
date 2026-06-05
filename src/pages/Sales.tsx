@@ -863,8 +863,8 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
     const extrair = (...labels: string[]): string => {
       for (const label of labels) {
         // Regex que ignora emojis e qualquer caractere antes do label
-        // Aceita múltiplos dois-pontos e espaços em volta
-        const regex = new RegExp(`(?:^|\\n).*?${label}\\s*:+\\s*([^\\n]+)`, 'im');
+        // Aceita tanto : (dois-pontos) quanto ? (interrogação)
+        const regex = new RegExp(`(?:^|\\n).*?${label}\\s*[:?]\\s*([^\\n]+)`, 'im');
         const match = texto.match(regex);
         if (match) return match[1].trim();
       }
@@ -884,7 +884,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
     const contato = extrair('CONTATO', 'Telefone', 'Contato');
     const email = extrair('E-MAIL (ENVIAR NF)', 'E-MAIL', 'EMAIL', 'E-mail', 'Email');
     const pagamento = extrair('FORMA DE PAGAMENTO', 'Pagamento', 'Forma de pagamento');
-    const embalagem = extrair('Embalagem para presente', 'Embalagem');
+    const embalagem = extrair('Embalagem para presente', 'Embalagem para presente?', 'Embalagem');
     const restricao = extrair('POSSUI RESTRIÇÃO DE HORARIO', 'RESTRIÇÃO DE HORARIO', 'RESTRIÇÃO', 'Restrição');
 
     const updates: Partial<typeof formData> = {};
