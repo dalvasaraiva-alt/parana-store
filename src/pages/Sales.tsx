@@ -864,7 +864,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
       }
 
       // Garantir que todos os valores sejam strings ou números válidos
-      const clienteNome = String(saleData?.customer_name || 'Cliente').trim();
+      const clienteNome = String(saleData?.customer_name || formData?.customer_name || "Cliente").trim();
       const clienteCpf = String(saleData?.customer_cpf || '').trim();
       const clienteEmail = String(saleData?.customer_email || '').trim();
 
@@ -2267,5 +2267,6 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
     </div>
   );
 }
+
 
 
