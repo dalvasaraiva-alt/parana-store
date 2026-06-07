@@ -1,27 +1,53 @@
-<!DOCTYPE html>
-<html>
-<head><title>Bling Auth</title></head>
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Bling - Autorizando...</title>
+  <style>
+    body { font-family: sans-serif; background: #0f172a; color: #e2e8f0; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+    .card { background: #1e293b; border-radius: 16px; padding: 48px; text-align: center; max-width: 420px; width: 90%; }
+    .status { margin-top: 24px; padding: 12px 20px; border-radius: 8px; font-size: 14px; }
+    .loading { background: #1e3a5f; color: #60a5fa; }
+    .success { background: #14532d; color: #4ade80; }
+    .error { background: #450a0a; color: #f87171; }
+    .btn { display: inline-block; margin-top: 20px; padding: 10px 24px; background: #3b82f6; color: white; border-radius: 8px; text-decoration: none; }
+  </style>
+</head>
 <body>
-<h2>Aguarde...</h2>
-<div id="result"></div>
-<script>
-const code = new URLSearchParams(window.location.search).get('code');
-if (code) {
-  fetch('https://www.bling.com.br/Api/v3/oauth/token', {
-    method: 'POST',
-    headers: {
-      'Authorization': 'Basic ' + btoa('7d83b5cfbdec581b948a1e1944cec3f2d00f20b6:4059dc377027aa21cb514b6664bb32ebc99a4ecb5f64ae4898549052f004'),
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    body: `grant_type=authorization_code&code=${code}&redirect_uri=https://parana-store.vercel.app/bling-auth.html`
-  })
-  .then(r => r.json())
-  .then(data => {
-    document.getElementById('result').innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
-  });
-} else {
-  document.getElementById('result').innerHTML = 'Nenhum código encontrado';
-}
-</script>
+  <div class="card">
+    <div style="font-size:48px">🔗</div>
+    <h1>Conectando ao Bling</h1>
+    <div class="status loading" id="status">Processando...</div>
+    <div id="action"></div>
+  </div>
+  <script>
+    async function handleCallback() {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get('code');
+      const statusEl = document.getElementById('status');
+      const actionEl = document.getElementById('action');
+      if (!code) { statusEl.className = 'status error'; statusEl.textContent = 'Codigo nao encontrado'; return; }
+      try {
+        const response = await fetch('https://lwcvrtjykxnipwkhzyem.supabase.co/functions/v1/bling-callback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code })
+        });
+        const data = await response.json();
+        if (data.success) {
+          statusEl.className = 'status success';
+          statusEl.textContent = 'Bling conectado com sucesso!';
+          actionEl.innerHTML = '<a href="/" class="btn">Voltar ao ERP</a>';
+        } else {
+          throw new Error(data.error || 'Erro desconhecido');
+        }
+      } catch (err) {
+        statusEl.className = 'status error';
+        statusEl.textContent = 'Erro: ' + err.message;
+        actionEl.innerHTML = '<a href="/" class="btn">Tentar novamente</a>';
+      }
+    }
+    handleCallback();
+  </script>
 </body>
 </html>
