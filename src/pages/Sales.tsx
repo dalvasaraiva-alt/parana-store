@@ -808,10 +808,9 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
           }
         }
       }
-      try { const blingItems = saleProducts.map(sp => ({ produto: { codigo: (sp.product as any)?.model || '', descricao: ((sp.product as any)?.model || '') + ' ' + ((sp.product as any)?.color || ''), unidade: 'UN' }, quantidade: sp.quantity, valor: sp.unit_price })); await fetch(import.meta.env.VITE_SUPABASE_URL + '/functions/v1/bling-sync', { method: 'POST', headers: { 'Authorization': 'Bearer ' + import.meta.env.VITE_SUPABASE_ANON_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'create_order', order: { data: saleDate, contato: { nome: formData.customer_name }, itens: blingItems, total: totals.totalSalePrice } }) }); } catch (blingErr) { console.error('Bling:', blingErr); } alert('Venda registrada com sucesso!');
+      try { const blingItems = saleProducts.map(sp => ({ produto: { codigo: (sp.product as any)?.model || '', descricao: ((sp.product as any)?.model || '') + ' ' + ((sp.product as any)?.color || ''), unidade: 'UN' }, quantidade: sp.quantity, valor: sp.unit_price })); await fetch(import.meta.env.VITE_SUPABASE_URL + '/functions/v1/bling-sync', { method: 'POST', headers: { 'Authorization': 'Bearer ' + import.meta.env.VITE_SUPABASE_ANON_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'create_order', order: { data: saleDate, contato: { nome: formData.customer_name }, itens: blingItems, total: totals.totalSalePrice } }) }); } catch (blingErr) { console.error('Bling:', blingErr); } alert('✅ Venda registrada com sucesso! Agora clique no botão "🔗 Enviar para Bling" para sincronizar com o Bling.');
       setLastSavedSaleId(saleData.id);
       resetForm();
-      onNavigate?.('history');
     } catch (error: any) {
       console.error('Error saving sale:', error);
       const errorMessage = error?.message || 'Erro desconhecido';
@@ -894,12 +893,20 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
 
       alert('✅ Venda enviada para Bling com sucesso!');
       setLastSavedSaleId('');
+      // Navegar para histórico após sucesso
+      setTimeout(() => {
+        onNavigate?.('history');
+      }, 500);
     } catch (error: any) {
       console.error('Erro ao enviar para Bling:', error);
       alert(`❌ Erro ao enviar para Bling: ${error.message || 'Erro desconhecido'}`);
     } finally {
       setIsSendingToBling(false);
     }
+  };
+
+  const handleNavigateToHistory = () => {
+    onNavigate?.('history');
   };
 
   const handleCepChange = async (cep: string) => {
@@ -2060,10 +2067,10 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
           )}
           <button
             type="button"
-            onClick={editSaleId ? () => onEditDone?.() : resetForm}
+            onClick={editSaleId ? () => onEditDone?.() : (lastSavedSaleId ? handleNavigateToHistory : resetForm)}
             className="px-8 py-4 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors font-medium"
           >
-            {editSaleId ? 'Cancelar' : 'Limpar'}
+            {editSaleId ? 'Cancelar' : (lastSavedSaleId ? 'Ir para Histórico' : 'Limpar')}
           </button>
         </div>
       </form>
