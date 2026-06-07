@@ -857,22 +857,29 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
       if (saleItems && saleItems.length > 0) {
         const firstItem = saleItems[0];
         const produto = firstItem.product;
-        produtoNome = `${produto?.model || ''} ${produto?.color || ''}`.trim();
-        quantidade = firstItem.quantity || 0;
-        valorUnitario = firstItem.unit_price || 0;
-        valorTotal = firstItem.total_price || 0;
+        produtoNome = `${produto?.model || ''} ${produto?.color || ''}`.trim() || 'Produto';
+        quantidade = Number(firstItem.quantity) || 0;
+        valorUnitario = Number(firstItem.unit_price) || 0;
+        valorTotal = Number(firstItem.total_price) || 0;
       }
 
+      // Garantir que todos os valores sejam strings ou números válidos
+      const clienteNome = String(saleData?.customer_name || 'Cliente').trim();
+      const clienteCpf = String(saleData?.customer_cpf || '').trim();
+      const clienteEmail = String(saleData?.customer_email || '').trim();
+
       const payload = {
-        cliente_nome: saleData.customer_name || '',
-        cliente_cpf: saleData.customer_cpf || '',
-        cliente_email: saleData.customer_email || '',
-        produto: produtoNome,
-        quantidade: quantidade,
-        valor_total: valorTotal,
-        valor_unitario: valorUnitario,
-        venda_id: saleIdToSend,
+        cliente_nome: clienteNome || 'Cliente',
+        cliente_cpf: clienteCpf || 'N/A',
+        cliente_email: clienteEmail || 'nao-informado@email.com',
+        produto: produtoNome || 'Produto',
+        quantidade: Math.max(0, quantidade),
+        valor_total: Math.max(0, valorTotal),
+        valor_unitario: Math.max(0, valorUnitario),
+        venda_id: String(saleIdToSend),
       };
+
+      console.log('Enviando para Bling:', payload);
 
       const response = await fetch(
         'https://lwcvrtjykxnipwkhzyem.supabase.co/functions/v1/bling-sync-venda',
