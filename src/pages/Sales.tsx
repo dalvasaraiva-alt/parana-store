@@ -116,6 +116,8 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
     { method: 'credit_card', card_brand: 'visa_mastercard', installments: 10, amount: 0 },
   ]);
   const [saleDate, setSaleDate] = useState<string>(getTodayInBrazil());
+  const [lastSavedSaleId, setLastSavedSaleId] = useState<string>('');
+  const [isSendingToBling, setIsSendingToBling] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -807,12 +809,96 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
         }
       }
       try { const blingItems = saleProducts.map(sp => ({ produto: { codigo: (sp.product as any)?.model || '', descricao: ((sp.product as any)?.model || '') + ' ' + ((sp.product as any)?.color || ''), unidade: 'UN' }, quantidade: sp.quantity, valor: sp.unit_price })); await fetch(import.meta.env.VITE_SUPABASE_URL + '/functions/v1/bling-sync', { method: 'POST', headers: { 'Authorization': 'Bearer ' + import.meta.env.VITE_SUPABASE_ANON_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'create_order', order: { data: saleDate, contato: { nome: formData.customer_name }, itens: blingItems, total: totals.totalSalePrice } }) }); } catch (blingErr) { console.error('Bling:', blingErr); } alert('Venda registrada com sucesso!');
+      setLastSavedSaleId(saleData.id);
       resetForm();
       onNavigate?.('history');
     } catch (error: any) {
       console.error('Error saving sale:', error);
       const errorMessage = error?.message || 'Erro desconhecido';
       alert(`Erro ao salvar venda: ${errorMessage}`);
+    }
+  };
+
+  const sendToBling = async () => {
+    const saleIdToSend = editSaleId || lastSavedSaleId;
+    if (!saleIdToSend) {
+      alert('Nenhuma venda salva para enviar para o Bling');
+      return;
+    }
+
+    setIsSendingToBling(true);
+    try {
+      // Buscar dados da venda no banco de dados
+      const { data: saleData, error: saleError } = await supabase
+        .from('sales')
+        .select('*')
+        .eq('id', saleIdToSend)
+        .single();
+
+      if (saleError || !saleData) {
+        throw new Error('Falha ao carregar dados da venda');
+      }
+
+      // Buscar itens da venda
+      const { data: saleItems, error: itemsError } = await supabase
+        .from('sale_items')
+        .select('*, product:products(*)')
+        .eq('sale_id', saleIdToSend);
+
+      if (itemsError) {
+        throw new Error('Falha ao carregar itens da venda');
+      }
+
+      // Preparar dados para enviar para o Bling
+      let produtoNome = '';
+      let quantidade = 0;
+      let valorUnitario = 0;
+      let valorTotal = 0;
+
+      if (saleItems && saleItems.length > 0) {
+        const firstItem = saleItems[0];
+        const produto = firstItem.product;
+        produtoNome = `${produto?.model || ''} ${produto?.color || ''}`.trim();
+        quantidade = firstItem.quantity || 0;
+        valorUnitario = firstItem.unit_price || 0;
+        valorTotal = firstItem.total_price || 0;
+      }
+
+      const payload = {
+        cliente_nome: saleData.customer_name || '',
+        cliente_cpf: saleData.customer_cpf || '',
+        cliente_email: saleData.customer_email || '',
+        produto: produtoNome,
+        quantidade: quantidade,
+        valor_total: valorTotal,
+        valor_unitario: valorUnitario,
+        venda_id: saleIdToSend,
+      };
+
+      const response = await fetch(
+        'https://lwcvrtjykxnipwkhzyem.supabase.co/functions/v1/bling-sync-venda',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const responseData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(responseData.error || 'Erro ao enviar para Bling');
+      }
+
+      alert('✅ Venda enviada para Bling com sucesso!');
+      setLastSavedSaleId('');
+    } catch (error: any) {
+      console.error('Erro ao enviar para Bling:', error);
+      alert(`❌ Erro ao enviar para Bling: ${error.message || 'Erro desconhecido'}`);
+    } finally {
+      setIsSendingToBling(false);
     }
   };
 
@@ -1955,6 +2041,23 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
             <ShoppingCart size={24} />
             {editSaleId ? 'Salvar Alterações' : 'Confirmar Venda'}
           </button>
+          {(editSaleId || lastSavedSaleId) && (
+            <button
+              type="button"
+              onClick={sendToBling}
+              disabled={isSendingToBling}
+              className="flex-1 bg-blue-600 px-6 py-4 rounded-lg hover:bg-blue-700 transition-colors font-bold text-lg disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+            >
+              {isSendingToBling ? (
+                <>
+                  <Loader2 size={24} className="animate-spin" />
+                  Enviando...
+                </>
+              ) : (
+                '🔗 Enviar para Bling'
+              )}
+            </button>
+          )}
           <button
             type="button"
             onClick={editSaleId ? () => onEditDone?.() : resetForm}
