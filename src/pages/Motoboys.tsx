@@ -1,4 +1,4 @@
-ï»¿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase, Motoboy, MotoboyStats } from '../lib/supabase';
 import { getTodayInBrazil, getYesterdayInBrazil, getLastMonthRangeInBrazil, getWeekRangeInBrazil } from '../lib/dateUtils';
 import { Plus, Pencil, Trash2, X, Bike, TrendingUp, Trophy, DollarSign, Calendar, PlusCircle } from 'lucide-react';
@@ -89,8 +89,8 @@ export default function Motoboys() {
         supabase.from('sales').select('motoboy_id, delivery_fee')
           .eq('delivery_type', 'motoboy')
           .in('status', ['finalizado', 'concluido'])
-          .gte('finalized_at', startUTC)
-          .lt('finalized_at', endUTC),
+          .gte('created_at', startUTC)
+          .lt('created_at', endUTC),
         supabase.from('small_sales').select('motoboy_id, delivery_fee')
           .eq('delivery_type', 'motoboy')
           .not('motoboy_id', 'is', null)
@@ -132,8 +132,8 @@ export default function Motoboys() {
         supabase.from('sales').select('motoboy_id, delivery_fee')
           .eq('delivery_type', 'motoboy')
           .in('status', ['finalizado', 'concluido'])
-          .gte('finalized_at', startUTC)
-          .lt('finalized_at', endUTC),
+          .gte('created_at', startUTC)
+          .lt('created_at', endUTC),
         supabase.from('small_sales').select('motoboy_id, delivery_fee')
           .eq('delivery_type', 'motoboy')
           .not('motoboy_id', 'is', null)
@@ -176,7 +176,7 @@ export default function Motoboys() {
       const [salesRes, smallSalesRes, paymentsRes] = await Promise.all([
         supabase.from('sales').select('motoboy_id, delivery_fee')
           .eq('delivery_type', 'motoboy').in('status', ['finalizado', 'concluido'])
-          .gte('finalized_at', startUTC).lt('finalized_at', endUTC),
+          .gte('created_at', startUTC).lt('created_at', endUTC),
         supabase.from('small_sales').select('motoboy_id, delivery_fee')
           .eq('delivery_type', 'motoboy')
           .not('motoboy_id', 'is', null)
@@ -215,7 +215,7 @@ export default function Motoboys() {
       const [salesRes, smallSalesRes, paymentsRes] = await Promise.all([
         supabase.from('sales').select('motoboy_id, delivery_fee')
           .eq('delivery_type', 'motoboy').in('status', ['finalizado', 'concluido'])
-          .gte('finalized_at', startUTC).lt('finalized_at', endUTC),
+          .gte('created_at', startUTC).lt('created_at', endUTC),
         supabase.from('small_sales').select('motoboy_id, delivery_fee')
           .eq('delivery_type', 'motoboy')
           .not('motoboy_id', 'is', null)
@@ -252,7 +252,7 @@ export default function Motoboys() {
       const [salesRes, smallSalesRes, paymentsRes] = await Promise.all([
         supabase.from('sales').select('motoboy_id, delivery_fee')
           .eq('delivery_type', 'motoboy').in('status', ['finalizado', 'concluido'])
-          .gte('finalized_at', startUTC).lt('finalized_at', endUTC),
+          .gte('created_at', startUTC).lt('created_at', endUTC),
         supabase.from('small_sales').select('motoboy_id, delivery_fee')
           .eq('delivery_type', 'motoboy')
           .not('motoboy_id', 'is', null)
@@ -292,7 +292,7 @@ export default function Motoboys() {
       const [salesRes, smallSalesRes, paymentsRes] = await Promise.all([
         supabase.from('sales').select('motoboy_id, delivery_fee')
           .eq('delivery_type', 'motoboy').in('status', ['finalizado', 'concluido'])
-          .gte('finalized_at', startUTC).lt('finalized_at', endUTC),
+          .gte('created_at', startUTC).lt('created_at', endUTC),
         supabase.from('small_sales').select('motoboy_id, delivery_fee')
           .eq('delivery_type', 'motoboy')
           .not('motoboy_id', 'is', null)
@@ -376,7 +376,7 @@ export default function Motoboys() {
   const getDateUTCRange = (dateStr: string) => {
     const startUTC = dateStr + 'T03:00:00.000Z';
     const [year, month, day] = dateStr.split('-').map(Number);
-    // Date.UTC Ã© agnÃ³stico de timezone â€” nÃ£o depende do fuso do browser
+    // Date.UTC é agnóstico de timezone — não depende do fuso do browser
     const nextStr = new Date(Date.UTC(year, month - 1, day + 1)).toISOString().split('T')[0];
     return { startUTC, endUTC: nextStr + 'T03:00:00.000Z' };
   };
@@ -391,8 +391,8 @@ export default function Motoboys() {
           .eq('motoboy_id', motoboyId)
           .eq('delivery_type', 'motoboy')
           .in('status', ['finalizado', 'concluido'])
-          .gte('finalized_at', startUTC)
-          .lt('finalized_at', endUTC)
+          .gte('created_at', startUTC)
+          .lt('created_at', endUTC)
           .order('finalized_at', { ascending: true }),
         supabase.from('small_sales').select('description, city, neighborhood')
           .eq('motoboy_id', motoboyId)
@@ -411,7 +411,7 @@ export default function Motoboys() {
         byCidade.get(cidade)!.push(bairro);
       }
 
-      // Small_sales com cidade/bairro entram na seÃ§Ã£o da cidade correspondente
+      // Small_sales com cidade/bairro entram na seção da cidade correspondente
       const smallSalesWithAddr = (smallSalesRes.data || []).filter(s => s.city && s.neighborhood);
       const smallSalesNoAddr   = (smallSalesRes.data || []).filter(s => !s.city || !s.neighborhood);
 
@@ -423,28 +423,28 @@ export default function Motoboys() {
       }
 
       const blocos = [...byCidade.entries()].map(([cidade, bairros]) =>
-        `ðŸ“ ${cidade}\n${bairros.map(b => `- ${b}: `).join('\n')}`
+        `?? ${cidade}\n${bairros.map(b => `- ${b}: `).join('\n')}`
       );
 
-      // Small_sales sem endereÃ§o ficam na seÃ§Ã£o "Pequenas Vendas"
+      // Small_sales sem endereço ficam na seção "Pequenas Vendas"
       const blocoSmall = smallSalesNoAddr.length > 0
-        ? `ðŸ“ Pequenas Vendas\n${smallSalesNoAddr.map(s => `- ${s.description}: `).join('\n')}`
+        ? `?? Pequenas Vendas\n${smallSalesNoAddr.map(s => `- ${s.description}: `).join('\n')}`
         : null;
 
       const texto = [
-        `ðŸ›µ Entregas ${motoboyName}`,
-        `ðŸ“… ${day}/${month}/${year}`,
+        `?? Entregas ${motoboyName}`,
+        `?? ${day}/${month}/${year}`,
         '',
         ...blocos.flatMap(b => [b, '']),
         ...(blocoSmall ? [blocoSmall, ''] : []),
-        `ðŸ’° Total: R$`,
-        `âœ… Obrigado!`,
+        `?? Total: R$`,
+        `? Obrigado!`,
       ].join('\n');
 
       setFormularioTexto(texto);
     } catch (err) {
       console.error(err);
-      alert('Erro ao gerar formulÃ¡rio');
+      alert('Erro ao gerar formulário');
     } finally {
       setFormularioLoading(false);
     }
@@ -462,8 +462,8 @@ export default function Motoboys() {
           .eq('motoboy_id', motoboyId)
           .eq('delivery_type', 'motoboy')
           .in('status', ['finalizado', 'concluido'])
-          .gte('finalized_at', startUTC)
-          .lt('finalized_at', endUTC)
+          .gte('created_at', startUTC)
+          .lt('created_at', endUTC)
           .order('finalized_at', { ascending: true }),
         supabase.from('small_sales')
           .select('id, description, delivery_fee, city, neighborhood')
@@ -476,11 +476,11 @@ export default function Motoboys() {
       const salesList = salesRes.data || [];
       const smallSalesList = smallSalesRes.data || [];
 
-      console.log('=== LANÃ‡AR VALORES DEBUG ===');
+      console.log('=== LANÇAR VALORES DEBUG ===');
       console.log(`motoboy_id: ${motoboyId}`);
       console.log(`Data solicitada: ${dateStr}`);
-      console.log(`Intervalo sales (finalized_at): ${startUTC} â†’ ${endUTC}`);
-      console.log(`Intervalo small_sales (created_at): ${startUTC} â†’ ${endUTC}`);
+      console.log(`Intervalo sales (finalized_at): ${startUTC} ? ${endUTC}`);
+      console.log(`Intervalo small_sales (created_at): ${startUTC} ? ${endUTC}`);
       if (salesRes.error) console.error('Erro na query sales:', salesRes.error);
       if (smallSalesRes.error) console.error('Erro na query small_sales:', smallSalesRes.error);
       console.log(`Vendas encontradas (${salesList.length}):`, salesList.map(s => ({
@@ -498,8 +498,8 @@ export default function Motoboys() {
 
       // Parse grouped format:
       // city headers: any non-bullet, non-footer line (strips leading emoji)
-      // delivery lines: start with "- " or "â€¢ " and contain ":"
-      const skipPrefixes = ['ðŸ›µ', 'ðŸ“…', 'ðŸ’°', 'âœ…', 'ðŸ™', 'â˜‘'];
+      // delivery lines: start with "- " or "• " and contain ":"
+      const skipPrefixes = ['??', '??', '??', '?', '??', '?'];
       const deliveryEntries: { bairro: string; cidade: string; valor: number }[] = [];
       let currentCity = '';
 
@@ -507,7 +507,7 @@ export default function Motoboys() {
         const trimmed = line.trim();
         if (!trimmed) continue;
 
-        const bulletMatch = trimmed.match(/^[-â€¢]\s+(.+)$/);
+        const bulletMatch = trimmed.match(/^[-•]\s+(.+)$/);
         if (bulletMatch && trimmed.includes(':')) {
           const withoutBullet = bulletMatch[1];
           const colonIdx = withoutBullet.lastIndexOf(':');
@@ -536,12 +536,12 @@ export default function Motoboys() {
 
       for (const { bairro, cidade, valor } of deliveryEntries) {
         if (cidade.toLowerCase() === SMALL_SALES_CITY.toLowerCase()) {
-          // Pequenas vendas: match por description (uma entrada do form = uma venda por descriÃ§Ã£o)
+          // Pequenas vendas: match por description (uma entrada do form = uma venda por descrição)
           const ss = smallSalesList.find(s =>
             !matchedSmall.has(s.id) &&
             (s.description || '').toLowerCase() === bairro.toLowerCase()
           );
-          console.log(`  [SMALL] desc="${bairro}" â†’ ${ss ? `ENCONTRADO id=${ss.id.slice(0, 8)}` : 'NÃƒO ENCONTRADO'}`);
+          console.log(`  [SMALL] desc="${bairro}" ? ${ss ? `ENCONTRADO id=${ss.id.slice(0, 8)}` : 'NÃO ENCONTRADO'}`);
           if (ss) {
             matchedSmall.add(ss.id);
             smallUpdates.push({ id: ss.id, delivery_fee: valor });
@@ -554,7 +554,7 @@ export default function Motoboys() {
             (s.city || '').toLowerCase() === cidade.toLowerCase()
           );
           if (matchingSales.length > 0) {
-            console.log(`  [SALE] bairro="${bairro}" cidade="${cidade}" â†’ ${matchingSales.length} encontrada(s): ${matchingSales.map(s => s.id.slice(0, 8)).join(', ')}`);
+            console.log(`  [SALE] bairro="${bairro}" cidade="${cidade}" ? ${matchingSales.length} encontrada(s): ${matchingSales.map(s => s.id.slice(0, 8)).join(', ')}`);
             for (const sale of matchingSales) {
               matchedSales.add(sale.id);
               const newTotalCost = (sale.total_cost || 0) - (sale.delivery_fee || 0) + valor;
@@ -569,7 +569,7 @@ export default function Motoboys() {
               (s.neighborhood || '').toLowerCase() === bairro.toLowerCase() &&
               (s.city || '').toLowerCase() === cidade.toLowerCase()
             );
-            console.log(`  [SMALL_ADDR] bairro="${bairro}" cidade="${cidade}" â†’ ${matchingSmall.length > 0 ? `${matchingSmall.length} encontrada(s): ${matchingSmall.map(s => s.id.slice(0, 8)).join(', ')}` : 'NÃƒO ENCONTRADO'}`);
+            console.log(`  [SMALL_ADDR] bairro="${bairro}" cidade="${cidade}" ? ${matchingSmall.length > 0 ? `${matchingSmall.length} encontrada(s): ${matchingSmall.map(s => s.id.slice(0, 8)).join(', ')}` : 'NÃO ENCONTRADO'}`);
             for (const ss of matchingSmall) {
               matchedSmall.add(ss.id);
               smallUpdates.push({ id: ss.id, delivery_fee: valor });
@@ -596,12 +596,12 @@ export default function Motoboys() {
         ),
       ]);
 
-      alert(`âœ… ${totalUpdates} venda${totalUpdates !== 1 ? 's' : ''} atualizada${totalUpdates !== 1 ? 's' : ''} com sucesso!`);
+      alert(`? ${totalUpdates} venda${totalUpdates !== 1 ? 's' : ''} atualizada${totalUpdates !== 1 ? 's' : ''} com sucesso!`);
       setLancarModal(null);
       setLancarTexto('');
     } catch (err) {
       console.error(err);
-      alert('Erro ao lanÃ§ar valores');
+      alert('Erro ao lançar valores');
     } finally {
       setLancarLoading(false);
     }
@@ -661,9 +661,9 @@ export default function Motoboys() {
     if (selectedPeriod === 'custom') {
       if (startDate && endDate) return `${startDate.toLocaleDateString('pt-BR')} - ${endDate.toLocaleDateString('pt-BR')}`;
       if (startDate) return startDate.toLocaleDateString('pt-BR');
-      return 'PerÃ­odo Personalizado';
+      return 'Período Personalizado';
     }
-    return selectedPeriod === 'today' ? 'Hoje' : selectedPeriod === 'yesterday' ? 'Ontem' : selectedPeriod === 'week' ? 'Esta Semana' : selectedPeriod === 'month' ? 'Este MÃªs' : selectedPeriod === 'last_month' ? 'MÃªs Anterior' : 'Total Geral';
+    return selectedPeriod === 'today' ? 'Hoje' : selectedPeriod === 'yesterday' ? 'Ontem' : selectedPeriod === 'week' ? 'Esta Semana' : selectedPeriod === 'month' ? 'Este Mês' : selectedPeriod === 'last_month' ? 'Mês Anterior' : 'Total Geral';
   };
 
   if (loading) return <div className="p-8"><div className="">Carregando...</div></div>;
@@ -691,13 +691,13 @@ export default function Motoboys() {
       <div className="bg-gray-800 rounded-xl border border-gray-700 p-5 mb-6">
         <div className="flex items-center gap-3 mb-4">
           <Calendar size={18} className="text-orange-500" />
-          <h3 className="text-base font-semibold">Filtro de PerÃ­odo</h3>
+          <h3 className="text-base font-semibold">Filtro de Período</h3>
         </div>
         <div className="flex flex-wrap gap-2 items-center">
           {(['today', 'yesterday', 'week', 'month', 'last_month', 'total', 'custom'] as TimePeriod[]).map(p => (
             <button key={p} onClick={() => handlePeriodChange(p)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${selectedPeriod === p ? 'bg-orange-500' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}>
-              {p === 'today' ? 'Hoje' : p === 'yesterday' ? 'Ontem' : p === 'week' ? 'Semana' : p === 'month' ? 'MÃªs' : p === 'last_month' ? 'MÃªs Anterior' : p === 'total' ? 'Total' : 'Personalizado'}
+              {p === 'today' ? 'Hoje' : p === 'yesterday' ? 'Ontem' : p === 'week' ? 'Semana' : p === 'month' ? 'Mês' : p === 'last_month' ? 'Mês Anterior' : p === 'total' ? 'Total' : 'Personalizado'}
             </button>
           ))}
           {selectedPeriod === 'custom' && (
@@ -711,10 +711,10 @@ export default function Motoboys() {
                 maxDate={new Date()}
                 dateFormat="dd/MM/yyyy"
                 locale={ptBR}
-                placeholderText="Data inÃ­cio"
+                placeholderText="Data início"
                 className="bg-gray-700 rounded-lg px-3 py-2 border border-gray-600 focus:outline-none focus:border-orange-500 text-sm w-36 cursor-pointer"
               />
-              <span className="text-gray-400 text-sm">atÃ©</span>
+              <span className="text-gray-400 text-sm">até</span>
               <DatePicker
                 selected={endDate}
                 onChange={(date: Date | null) => setEndDate(date)}
@@ -792,10 +792,10 @@ export default function Motoboys() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">DescriÃ§Ã£o</label>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Descrição</label>
                 <input type="text" value={paymentData.description}
                   onChange={e => setPaymentData({ ...paymentData, description: e.target.value })}
-                  placeholder="Ex: Troca de relÃ³gio na casa do cliente"
+                  placeholder="Ex: Troca de relógio na casa do cliente"
                   className="w-full bg-gray-700 rounded-lg px-4 py-2 border border-gray-600 focus:border-orange-500 focus:outline-none" required />
               </div>
               <div>
@@ -818,12 +818,12 @@ export default function Motoboys() {
         </div>
       )}
 
-      {/* Modal Gerar FormulÃ¡rio */}
+      {/* Modal Gerar Formulário */}
       {formularioModal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
           <div className="bg-gray-800 rounded-xl p-6 w-full max-w-md border border-gray-700 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-5">
-              <h2 className="text-xl font-bold">ðŸ“‹ Gerar FormulÃ¡rio â€” {formularioModal.motoboyName}</h2>
+              <h2 className="text-xl font-bold">?? Gerar Formulário — {formularioModal.motoboyName}</h2>
               <button onClick={() => setFormularioModal(null)} className="text-gray-400"><X size={24} /></button>
             </div>
             <div className="space-y-4">
@@ -847,7 +847,7 @@ export default function Motoboys() {
                   <button
                     onClick={async () => { await navigator.clipboard.writeText(formularioTexto); setFormularioCopiado(true); setTimeout(() => setFormularioCopiado(false), 2000); }}
                     className="w-full bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition-colors text-sm font-semibold">
-                    {formularioCopiado ? 'âœ… Copiado!' : 'ðŸ“‹ Copiar'}
+                    {formularioCopiado ? '? Copiado!' : '?? Copiar'}
                   </button>
                 </>
               )}
@@ -856,12 +856,12 @@ export default function Motoboys() {
         </div>
       )}
 
-      {/* Modal LanÃ§ar Valores */}
+      {/* Modal Lançar Valores */}
       {lancarModal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
           <div className="bg-gray-800 rounded-xl p-6 w-full max-w-md border border-gray-700 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-5">
-              <h2 className="text-xl font-bold">ðŸ’° LanÃ§ar Valores â€” {lancarModal.motoboyName}</h2>
+              <h2 className="text-xl font-bold">?? Lançar Valores — {lancarModal.motoboyName}</h2>
               <button onClick={() => { setLancarModal(null); setLancarTexto(''); }} className="text-gray-400"><X size={24} /></button>
             </div>
             <div className="space-y-4">
@@ -873,12 +873,12 @@ export default function Motoboys() {
                   className="w-full bg-gray-700 rounded-lg px-4 py-2 border border-gray-600 focus:border-orange-500 focus:outline-none" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Cole o formulÃ¡rio preenchido</label>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Cole o formulário preenchido</label>
                 <textarea
                   value={lancarTexto}
                   onChange={e => setLancarTexto(e.target.value)}
                   rows={10}
-                  placeholder={'Entregas JoÃ£o - 24/04/2026\n\nCentro - NiterÃ³i: 20\nIcaraÃ­ - NiterÃ³i: 15'}
+                  placeholder={'Entregas João - 24/04/2026\n\nCentro - Niterói: 20\nIcaraí - Niterói: 15'}
                   className="w-full bg-gray-900 rounded-lg px-3 py-2 border border-gray-600 focus:border-orange-500 focus:outline-none text-sm font-mono resize-none"
                 />
               </div>
@@ -903,7 +903,7 @@ export default function Motoboys() {
             <thead className="bg-gray-700/50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Nome</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">AÃ§Ãµes</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-700">
@@ -920,11 +920,11 @@ export default function Motoboys() {
                       </button>
                       <button onClick={() => { setFormularioModal({ motoboyId: motoboy.id, motoboyName: motoboy.name }); setFormularioDate(getTodayInBrazil()); setFormularioTexto(''); }}
                         className="text-purple-400 hover:text-purple-300 text-xs whitespace-nowrap">
-                        ðŸ“‹ FormulÃ¡rio
+                        ?? Formulário
                       </button>
                       <button onClick={() => { setLancarModal({ motoboyId: motoboy.id, motoboyName: motoboy.name }); setLancarDate(formularioDate); setLancarTexto(''); }}
                         className="text-yellow-400 hover:text-yellow-300 text-xs whitespace-nowrap">
-                        ðŸ’° Valores
+                        ?? Valores
                       </button>
                       <button onClick={() => handleEdit(motoboy)} className="text-blue-400 hover:text-blue-300"><Pencil size={16} /></button>
                       <button onClick={() => handleDelete(motoboy.id)} className="text-red-400 hover:text-red-300"><Trash2 size={16} /></button>
@@ -946,7 +946,7 @@ export default function Motoboys() {
                     <div key={p.id} className="flex items-center justify-between bg-gray-700/50 rounded-lg px-3 py-2">
                       <div>
                         <span className="text-xs font-medium">{motoboy?.name}</span>
-                        <span className="text-gray-400 text-xs mx-2">â€¢</span>
+                        <span className="text-gray-400 text-xs mx-2">•</span>
                         <span className="text-gray-400 text-xs">{p.description}</span>
                         <span className="text-gray-500 text-xs ml-2">({formatDate(p.date)})</span>
                       </div>
@@ -973,7 +973,7 @@ export default function Motoboys() {
                 {(['today', 'yesterday', 'week', 'month', 'last_month', 'total'] as TimePeriod[]).map(p => (
                   <button key={p} onClick={() => handlePeriodChange(p)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${selectedPeriod === p ? 'bg-orange-500' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'}`}>
-                    {p === 'today' ? 'Hoje' : p === 'yesterday' ? 'Ontem' : p === 'week' ? 'Semana' : p === 'month' ? 'MÃªs' : p === 'last_month' ? 'MÃªs Ant.' : 'Total'}
+                    {p === 'today' ? 'Hoje' : p === 'yesterday' ? 'Ontem' : p === 'week' ? 'Semana' : p === 'month' ? 'Mês' : p === 'last_month' ? 'Mês Ant.' : 'Total'}
                   </button>
                 ))}
               </div>
@@ -1025,7 +1025,7 @@ export default function Motoboys() {
                   {selectedPeriod !== 'custom' && (
                     <div className="mt-2 pt-2 border-t border-gray-700 flex justify-between items-center">
                       <div className="flex items-center gap-1 text-gray-400 text-xs">
-                        <DollarSign size={11} /> MÃ©dia por entrega
+                        <DollarSign size={11} /> Média por entrega
                       </div>
                       <span className="text-green-400 text-xs font-semibold">
                         R$ {(deliveries > 0 ? earnings / deliveries : motoboyStats.avg_delivery_value || 0).toFixed(2)}
@@ -1035,8 +1035,8 @@ export default function Motoboys() {
 
                   {selectedPeriod === 'total' && (
                     <div className="mt-2 flex items-center justify-between text-xs">
-                      <span className="text-gray-400 flex items-center gap-1"><TrendingUp size={11} /> Total histÃ³rico</span>
-                      <span className="font-semibold">{motoboyStats.total_deliveries} entregas â€¢ <span className="text-green-400">R$ {motoboyStats.total_earnings.toFixed(2)}</span></span>
+                      <span className="text-gray-400 flex items-center gap-1"><TrendingUp size={11} /> Total histórico</span>
+                      <span className="font-semibold">{motoboyStats.total_deliveries} entregas • <span className="text-green-400">R$ {motoboyStats.total_earnings.toFixed(2)}</span></span>
                     </div>
                   )}
                 </div>
