@@ -44,7 +44,7 @@ serve(async (req) => {
     console.log('Buscando formas de pagamento...')
     const r3 = await fetch('https://www.bling.com.br/Api/v3/formas-pagamentos', { headers: { 'Authorization': 'Bearer ' + token } })
     const d3 = await r3.json()
-    console.log('Formas pag:', JSON.stringify(d3?.data?.slice(0,2)))
+    console.log('Formas pag:', JSON.stringify(d3?.data))
     const formaPagId = d3?.data?.[0]?.id || 1
     await sleep(400)
     const hoje = new Date().toISOString().split('T')[0]
@@ -61,5 +61,6 @@ serve(async (req) => {
     return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
   }
 })
+
 
 
