@@ -808,7 +808,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
           }
         }
       }
-      try { console.log('saleProducts no momento do envio:', JSON.stringify(saleProducts)); const primeiroProduto = saleProducts[0]; const _p = primeiroProduto?.product as any || products.find(p => p.id === primeiroProduto?.product_id) as any; const nomeProduto = _p ? ((_p.model || '') + ' ' + (_p.color || '')).trim() || 'Produto' : 'Produto'; const blingPayload = { cliente_nome: formData.customer_name || 'Cliente', cliente_cpf: formData.customer_cpf || '', valor_total: totals.totalSalePrice, valor_unitario: primeiroProduto?.unit_price || totals.totalSalePrice, produto: nomeProduto, quantidade: primeiroProduto?.quantity || 1, forma_pagamento: payments[0]?.method || 'pix', cliente_email: formData.customer_email || '', cliente_telefone: formData.customer_phone || '', endereco_rua: formData.address_street || '', endereco_numero: formData.address_number || '', endereco_bairro: formData.address_neighborhood || '', endereco_cidade: formData.address_city || '', endereco_estado: formData.address_state || 'PR', endereco_cep: formData.address_zip || '', venda_id: String(saleData.id) }; await fetch('https://lwcvrtjykxnipwkhzyem.supabase.co/functions/v1/bling-sync-venda', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(blingPayload) }); } catch (blingErr) { console.error('Bling:', blingErr); } alert('Venda registrada com sucesso!');
+      try { console.log('saleProducts no momento do envio:', JSON.stringify(saleProducts)); const primeiroProduto = saleProducts[0]; const _p = primeiroProduto?.product as any || products.find(p => p.id === primeiroProduto?.product_id) as any; const nomeProduto = _p ? ((_p.model || '') + ' ' + (_p.color || '')).trim() || 'Produto' : 'Produto'; const blingPayload = { cliente_nome: formData.customer_name || 'Cliente', cliente_cpf: formData.customer_cpf || '', valor_total: totals.totalSalePrice, valor_unitario: primeiroProduto?.unit_price || totals.totalSalePrice, produto: nomeProduto, quantidade: primeiroProduto?.quantity || 1, forma_pagamento: paymentMethods[0]?.method || 'pix', cliente_email: formData.customer_email || '', cliente_telefone: formData.customer_phone || '', endereco_rua: formData.address_street || '', endereco_numero: formData.address_number || '', endereco_bairro: formData.address_neighborhood || '', endereco_cidade: formData.address_city || '', endereco_estado: formData.address_state || 'PR', endereco_cep: formData.address_zip || '', venda_id: String(saleData.id) }; await fetch('https://lwcvrtjykxnipwkhzyem.supabase.co/functions/v1/bling-sync-venda', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(blingPayload) }); } catch (blingErr) { console.error('Bling:', blingErr); } alert('Venda registrada com sucesso!');
       setLastSavedSaleId(saleData.id);
       resetForm();
     } catch (error: any) {
@@ -877,7 +877,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
         valor_total: Math.max(0, valorTotal),
         valor_unitario: Math.max(0, valorUnitario),
         venda_id: String(saleIdToSend),
-          forma_pagamento: payments[0]?.method || 'pix',
+          forma_pagamento: paymentMethods[0]?.method || 'pix',
       };
 
       console.log('Enviando para Bling:', payload);
@@ -2268,6 +2268,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
     </div>
   );
 }
+
 
 
 
