@@ -34,7 +34,7 @@ serve(async (req) => {
     if (!contatoId) {
       await sleep(400)
       console.log('Criando contato...')
-      const r2 = await fetch('https://www.bling.com.br/Api/v3/contatos', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify({ nome: nome, tipo: 'F', situacao: 'A' }) })
+      const r2 = await fetch('https://www.bling.com.br/Api/v3/contatos', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify({ nome: nome, tipoPessoa: 'F', situacao: 'A', cpfCnpj: (venda?.cliente_cpf || '').replace(/\D/g, ''), email: venda?.cliente_email || '', celular: venda?.cliente_telefone || '', endereco: { endereco: venda?.endereco_rua || '', numero: venda?.endereco_numero || 'S/N', complemento: venda?.endereco_complemento || '', bairro: venda?.endereco_bairro || '', cep: (venda?.endereco_cep || '').replace(/\D/g, ''), municipio: venda?.endereco_cidade || '', uf: venda?.endereco_estado || 'PR' } }) })
       const d2 = await r2.json()
       console.log('Contato criado:', JSON.stringify(d2))
       contatoId = d2?.data?.id || null
@@ -61,6 +61,7 @@ serve(async (req) => {
     return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
   }
 })
+
 
 
 
