@@ -16,7 +16,7 @@ serve(async (req) => {
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
     const body = await req.json()
     const venda = body.venda || body
-    console.log('INICIO - venda:', JSON.stringify(venda))
+    console.log('PRODUTO recebido:', JSON.stringify(venda?.produto)); console.log('INICIO - venda:', JSON.stringify(venda))
     const { data: tokenData } = await supabase.from('bling_tokens').select('*').eq('id', 1).single()
     if (!tokenData) return new Response(JSON.stringify({ error: 'Bling nao conectado' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
     const token = tokenData.access_token
@@ -61,6 +61,7 @@ serve(async (req) => {
     return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
   }
 })
+
 
 
 
