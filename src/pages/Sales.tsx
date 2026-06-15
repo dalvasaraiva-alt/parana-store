@@ -1,4 +1,4 @@
-ï»¿import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { supabase, Product, Accessory, Motoboy, Supplier } from '../lib/supabase';
 import { Trash2, ShoppingCart, TrendingUp, Loader2 } from 'lucide-react';
 import { calculateCardFee, getFeePercentageLabel } from '../lib/cardFees';
@@ -193,7 +193,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
       }
     } catch (error) {
       console.error('Error loading data:', error);
-      alert('Erro ao carregar dados. Por favor, recarregue a pÃ¡gina.');
+      alert('Erro ao carregar dados. Por favor, recarregue a página.');
     } finally {
       setLoading(false);
       console.log('Loading complete');
@@ -275,7 +275,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
       }
     } catch (error) {
       console.error('Error loading sale for edit:', error);
-      alert('Erro ao carregar dados da venda para ediÃ§Ã£o');
+      alert('Erro ao carregar dados da venda para edição');
     }
   };
 
@@ -461,7 +461,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
 
     for (const mi of manualItems) {
       if (mi.price < 0) {
-        alert(`Por favor, insira o preÃ§o para o item "${mi.name}"`);
+        alert(`Por favor, insira o preço para o item "${mi.name}"`);
         return;
       }
     }
@@ -472,7 +472,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
     if (formData.customer_cpf) {
       const cleanedCpf = cleanCpf(formData.customer_cpf);
       if (!validateCpf(cleanedCpf)) {
-        alert('CPF invÃ¡lido');
+        alert('CPF inválido');
         return;
       }
     }
@@ -494,12 +494,12 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
 
     for (const sp of saleProducts) {
      if (sp.unit_price < 0) {
-  alert('Por favor, insira o preÃ§o de venda para todos os produtos');
+  alert('Por favor, insira o preço de venda para todos os produtos');
   return;
 }
       const product = products.find((p) => p.id === sp.product_id);
      if (!product) {
-  alert(`Produto nÃ£o encontrado`);
+  alert(`Produto não encontrado`);
   return;
 }
     }
@@ -510,7 +510,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
         manualItems.reduce((s, mi) => s + mi.price * mi.quantity, 0);
       const totalAllocated = paymentMethods.reduce((s, pm) => s + pm.amount, 0);
       if (Math.abs(totalAllocated - totalExpected) > 0.01) {
-        alert(`Total alocado (R$ ${totalAllocated.toFixed(2)}) nÃ£o bate com o valor da venda (R$ ${totalExpected.toFixed(2)})`);
+        alert(`Total alocado (R$ ${totalAllocated.toFixed(2)}) não bate com o valor da venda (R$ ${totalExpected.toFixed(2)})`);
         return;
       }
     }
@@ -601,7 +601,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
       const totals = calculateTotals();
 
       if (editSaleId) {
-        // -- Modo ediÃ§Ã£o: UPDATE da venda existente --------------------------
+        // -- Modo edição: UPDATE da venda existente --------------------------
         const origMap = new Map(originalItemsRef.current.map(i => [i.product_id, i.quantity]));
         const currMap = new Map(saleProducts.map(sp => [sp.product_id, sp.quantity]));
 
@@ -680,7 +680,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
         }).eq('id', editSaleId);
         if (updateErr) throw updateErr;
 
-        // Atualiza snapshot para futuros saves na mesma sessÃ£o
+        // Atualiza snapshot para futuros saves na mesma sessão
         originalItemsRef.current = saleProducts.map(sp => ({ product_id: sp.product_id, quantity: sp.quantity }));
         alert('Venda atualizada com sucesso!');
         onEditDone?.();
@@ -808,7 +808,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
           }
         }
       }
-      try { const blingItems = saleProducts.map(sp => ({ produto: { codigo: (sp.product as any)?.model || '', descricao: ((sp.product as any)?.model || '') + ' ' + ((sp.product as any)?.color || ''), unidade: 'UN' }, quantidade: sp.quantity, valor: sp.unit_price })); await fetch(import.meta.env.VITE_SUPABASE_URL + '/functions/v1/bling-sync', { method: 'POST', headers: { 'Authorization': 'Bearer ' + import.meta.env.VITE_SUPABASE_ANON_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'create_order', order: { data: saleDate, contato: { nome: formData.customer_name }, itens: blingItems, total: totals.totalSalePrice } }) }); } catch (blingErr) { console.error('Bling:', blingErr); } alert('? Venda registrada com sucesso! Agora clique no botÃ£o "ðŸ”— Enviar para Bling" para sincronizar com o Bling.');
+      try { const blingItems = saleProducts.map(sp => ({ produto: { codigo: (sp.product as any)?.model || '', descricao: ((sp.product as any)?.model || '') + ' ' + ((sp.product as any)?.color || ''), unidade: 'UN' }, quantidade: sp.quantity, valor: sp.unit_price })); await fetch(import.meta.env.VITE_SUPABASE_URL + '/functions/v1/bling-sync', { method: 'POST', headers: { 'Authorization': 'Bearer ' + import.meta.env.VITE_SUPABASE_ANON_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'create_order', order: { data: saleDate, contato: { nome: formData.customer_name }, itens: blingItems, total: totals.totalSalePrice } }) }); } catch (blingErr) { console.error('Bling:', blingErr); } alert('? Venda registrada com sucesso! Agora clique no botão "?? Enviar para Bling" para sincronizar com o Bling.');
       setLastSavedSaleId(saleData.id);
       resetForm();
     } catch (error: any) {
@@ -863,7 +863,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
         valorTotal = Number(firstItem.total_price) || 0;
       }
 
-      // Garantir que todos os valores sejam strings ou nÃºmeros vÃ¡lidos
+      // Garantir que todos os valores sejam strings ou números válidos
       const clienteNome = String(saleData?.customer_name || formData?.customer_name || "Cliente").trim();
       const clienteCpf = String(saleData?.customer_cpf || '').trim();
       const clienteEmail = String(saleData?.customer_email || '').trim();
@@ -877,6 +877,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
         valor_total: Math.max(0, valorTotal),
         valor_unitario: Math.max(0, valorUnitario),
         venda_id: String(saleIdToSend),
+          forma_pagamento: payments[0]?.method || 'pix',
       };
 
       console.log('Enviando para Bling:', payload);
@@ -900,7 +901,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
 
       alert('? Venda enviada para Bling com sucesso!');
       setLastSavedSaleId('');
-      // Navegar para histÃ³rico apÃ³s sucesso
+      // Navegar para histórico após sucesso
       setTimeout(() => {
         onNavigate?.('history');
       }, 500);
@@ -942,10 +943,10 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
         }
 
         setTimeout(() => {
-          document.querySelector<HTMLInputElement>('input[placeholder="NÃºmero*"]')?.focus();
+          document.querySelector<HTMLInputElement>('input[placeholder="Número*"]')?.focus();
         }, 100);
       } else {
-        setCepError('CEP invÃ¡lido');
+        setCepError('CEP inválido');
       }
     }
   };
@@ -958,7 +959,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
     setCpfError('');
 
     if (cleaned.length === 11 && !validateCpf(cleaned)) {
-      setCpfError('CPF invÃ¡lido');
+      setCpfError('CPF inválido');
     }
   };
 
@@ -966,7 +967,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
     const extrair = (...labels: string[]): string => {
       for (const label of labels) {
         // Regex que ignora emojis e qualquer caractere antes do label
-        // Aceita tanto : (dois-pontos) quanto ? (interrogaÃ§Ã£o)
+        // Aceita tanto : (dois-pontos) quanto ? (interrogação)
         const regex = new RegExp(`(?:^|\\n).*?${label}\\s*[:?]\\s*([^\\n]+)`, 'im');
         const match = texto.match(regex);
         if (match) return match[1].trim();
@@ -974,10 +975,10 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
       return '';
     };
 
-    // Extrai cada campo com suas variaÃ§Ãµes (mais especÃ­fico primeiro)
+    // Extrai cada campo com suas variações (mais específico primeiro)
     const nome = extrair('NOME COMPLETO', 'Nome');
-    const rua = extrair('Rua', 'EndereÃ§o', 'Logradouro', 'End');
-    const numero = extrair('NÃšMERO', 'NÃºmero', 'NÂº', 'NÂ°', 'Num');
+    const rua = extrair('Rua', 'Endereço', 'Logradouro', 'End');
+    const numero = extrair('NÚMERO', 'Número', 'Nº', 'N°', 'Num');
     const complemento = extrair('Complemento', 'Comp');
     const bairro = extrair('Bairro');
     const cepRaw = extrair('CEP', 'Cep');
@@ -988,7 +989,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
     const email = extrair('E-MAIL (ENVIAR NF)', 'E-MAIL', 'EMAIL', 'E-mail', 'Email');
     const pagamento = extrair('FORMA DE PAGAMENTO', 'Pagamento', 'Forma de pagamento');
     const embalagem = extrair('Embalagem para presente', 'Embalagem para presente?', 'Embalagem');
-    const restricao = extrair('POSSUI RESTRIÃ‡ÃƒO DE HORARIO', 'RESTRIÃ‡ÃƒO DE HORARIO', 'RESTRIÃ‡ÃƒO', 'RestriÃ§Ã£o');
+    const restricao = extrair('POSSUI RESTRIÇÃO DE HORARIO', 'RESTRIÇÃO DE HORARIO', 'RESTRIÇÃO', 'Restrição');
 
     const updates: Partial<typeof formData> = {};
     if (nome) updates.customer_name = nome;
@@ -1012,7 +1013,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
       updates.customer_cpf = cleaned;
     }
 
-    // Armazenar dados extras para referÃªncia (nÃ£o incluem no formData)
+    // Armazenar dados extras para referência (não incluem no formData)
     if (bairro) setNeighborhoodSearch(bairro);
     if (cidade) setCitySearch(cidade);
 
@@ -1026,7 +1027,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
     if (updates.customer_cpf) {
       const formatted = formatCpf(updates.customer_cpf);
       setCpfDisplay(formatted);
-      setCpfError(updates.customer_cpf.length === 11 && !validateCpf(updates.customer_cpf) ? 'CPF invÃ¡lido' : '');
+      setCpfError(updates.customer_cpf.length === 11 && !validateCpf(updates.customer_cpf) ? 'CPF inválido' : '');
     }
 
     setFormData(prev => ({ ...prev, ...updates }));
@@ -1044,12 +1045,12 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
   const handleWhatsappConfirm = () => {
     if (!whatsappPreview) return;
     
-    // Aplicar dados ao formulÃ¡rio
+    // Aplicar dados ao formulário
     const updates = whatsappPreview;
     if (updates.customer_cpf) {
       const formatted = formatCpf(updates.customer_cpf);
       setCpfDisplay(formatted);
-      setCpfError(updates.customer_cpf.length === 11 && !validateCpf(updates.customer_cpf) ? 'CPF invÃ¡lido' : '');
+      setCpfError(updates.customer_cpf.length === 11 && !validateCpf(updates.customer_cpf) ? 'CPF inválido' : '');
     }
 
     setFormData(prev => ({ ...prev, ...updates }));
@@ -1220,7 +1221,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
                     </div>
 
                     <div className="col-span-3">
-                      <label className="block text-xs text-gray-400 mb-1">PreÃ§o Venda (R$)</label>
+                      <label className="block text-xs text-gray-400 mb-1">Preço Venda (R$)</label>
                       <input
                         type="number"
                         step="0.01"
@@ -1257,7 +1258,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
 
         {saleAccessories.length > 0 && (
           <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-            <h2 className="text-xl font-bold mb-4">AcessÃ³rios Selecionados</h2>
+            <h2 className="text-xl font-bold mb-4">Acessórios Selecionados</h2>
             <div className="space-y-3">
               {saleAccessories.map((sa, index) => (
                 <div key={index} className="bg-gray-700 rounded-lg p-4 border border-gray-600">
@@ -1350,7 +1351,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
                     </div>
 
                     <div className="col-span-2">
-                      <label className="block text-xs text-gray-400 mb-1">PreÃ§o Venda (R$)</label>
+                      <label className="block text-xs text-gray-400 mb-1">Preço Venda (R$)</label>
                       <input
                         type="number"
                         step="0.01"
@@ -1405,7 +1406,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
                 <textarea
                   autoFocus
                   rows={6}
-                  placeholder="NOME COMPLETO: ...&#10;CPF: ...&#10;CIDADE: ...&#10;CEP: ...&#10;NÃšMERO: ...&#10;CONTATO: ...&#10;E-MAIL: ...&#10;FORMA DE PAGAMENTO: ...&#10;Embalagem para presente? ...&#10;POSSUI RESTRIÃ‡ÃƒO DE HORARIO? ..."
+                  placeholder="NOME COMPLETO: ...&#10;CPF: ...&#10;CIDADE: ...&#10;CEP: ...&#10;NÚMERO: ...&#10;CONTATO: ...&#10;E-MAIL: ...&#10;FORMA DE PAGAMENTO: ...&#10;Embalagem para presente? ...&#10;POSSUI RESTRIÇÃO DE HORARIO? ..."
                   onPaste={(e) => {
                     e.preventDefault();
                     parsearFormulario(e.clipboardData.getData('text'));
@@ -1475,13 +1476,13 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
                       onClick={() => setShowPasteForm(v => !v)}
                       className="text-sm text-gray-400 hover:text-orange-400 transition-colors"
                     >
-                      ?? Colar FormulÃ¡rio
+                      ?? Colar Formulário
                     </button>
                     {showPasteForm && (
                       <textarea
                         autoFocus
                         rows={5}
-                        placeholder="Cole o texto do formulÃ¡rio aqui e os campos serÃ£o preenchidos automaticamente..."
+                        placeholder="Cole o texto do formulário aqui e os campos serão preenchidos automaticamente..."
                         onPaste={(e) => {
                           e.preventDefault();
                           parsearFormulario(e.clipboardData.getData('text'));
@@ -1528,7 +1529,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
                     />
                     <input
                       type="text"
-                      placeholder="NÃºmero"
+                      placeholder="Número"
                       value={formData.address_number}
                       onChange={(e) => setFormData({ ...formData, address_number: e.target.value })}
                       className="w-full bg-gray-700 rounded-lg px-4 py-2 border border-gray-600 focus:border-orange-500 focus:outline-none"
@@ -1557,7 +1558,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
                     />
                     <input
                       type="text"
-                      placeholder="NÃºmero"
+                      placeholder="Número"
                       value={formData.address_number}
                       onChange={(e) => setFormData({ ...formData, address_number: e.target.value })}
                       className="w-full bg-gray-700 rounded-lg px-4 py-2 border border-gray-600 focus:border-orange-500 focus:outline-none"
@@ -1581,13 +1582,13 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
                       onClick={() => setShowPasteForm(v => !v)}
                       className="text-sm text-gray-400 hover:text-orange-400 transition-colors"
                     >
-                      ?? Colar FormulÃ¡rio
+                      ?? Colar Formulário
                     </button>
                     {showPasteForm && (
                       <textarea
                         autoFocus
                         rows={5}
-                        placeholder="Cole o texto do formulÃ¡rio aqui e os campos serÃ£o preenchidos automaticamente..."
+                        placeholder="Cole o texto do formulário aqui e os campos serão preenchidos automaticamente..."
                         onPaste={(e) => {
                           e.preventDefault();
                           parsearFormulario(e.clipboardData.getData('text'));
@@ -1632,7 +1633,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
                     />
                     <input
                       type="text"
-                      placeholder="NÃºmero"
+                      placeholder="Número"
                       value={formData.address_number}
                       onChange={(e) => setFormData({ ...formData, address_number: e.target.value })}
                       className="w-full bg-gray-700 rounded-lg px-4 py-2 border border-gray-600 focus:border-orange-500 focus:outline-none"
@@ -1731,8 +1732,8 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
                     >
                       <option value="pix">PIX (Sem taxa)</option>
                       <option value="cash">Dinheiro (Sem taxa)</option>
-                      <option value="debit_card">DÃ©bito</option>
-                      <option value="credit_card">CrÃ©dito</option>
+                      <option value="debit_card">Débito</option>
+                      <option value="credit_card">Crédito</option>
                       <option value="payment_link">Link de Pagamento</option>
                     </select>
 
@@ -1862,7 +1863,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
               className="w-full bg-gray-700 rounded-lg px-4 py-2 border border-gray-600 focus:border-orange-500 focus:outline-none"
               required
             >
-              <option value="loja_fisica">Loja FÃ­sica</option>
+              <option value="loja_fisica">Loja Física</option>
               <option value="motoboy">Motoboy</option>
               <option value="correios">Correios (SEDEX)</option>
             </select>
@@ -1914,7 +1915,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
           <div className="mt-4 space-y-3">
             <input
               type="text"
-              placeholder="?? ObservaÃ§Ãµes (ex: Deixar na portaria, Entregar para Bernardo)"
+              placeholder="?? Observações (ex: Deixar na portaria, Entregar para Bernardo)"
               value={formData.delivery_notes}
               onChange={(e) => setFormData({ ...formData, delivery_notes: e.target.value })}
               className="w-full bg-gray-700 rounded-lg px-4 py-2 border border-gray-600 focus:border-orange-500 focus:outline-none text-sm"
@@ -1922,7 +1923,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
             />
             <input
               type="text"
-              placeholder="?? RestriÃ§Ã£o de horÃ¡rio (ex: Entregar apÃ³s 14h)"
+              placeholder="?? Restrição de horário (ex: Entregar após 14h)"
               value={formData.delivery_restrictions}
               onChange={(e) => setFormData({ ...formData, delivery_restrictions: e.target.value })}
               className="w-full bg-gray-700 rounded-lg px-4 py-2 border border-gray-600 focus:border-orange-500 focus:outline-none text-sm"
@@ -1962,7 +1963,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
             {formData.delivery_type === 'correios' && (
               <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
                 <p className="text-blue-400 text-sm font-medium">
-                  Envio padrÃ£o: Envelope atÃ© 300g | Seguro: R$150
+                  Envio padrão: Envelope até 300g | Seguro: R$150
                 </p>
               </div>
             )}
@@ -1985,7 +1986,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
             </div>
 
             <div className="rounded-lg p-4" style={{ background: 'var(--bg-inner)', border: '1px solid var(--border-main)' }}>
-              <div className="text-sm mb-1" style={{ color: 'var(--text-muted)' }}>Taxa do CartÃ£o</div>
+              <div className="text-sm mb-1" style={{ color: 'var(--text-muted)' }}>Taxa do Cartão</div>
               <div className="text-red-400 text-2xl font-bold">
                 - R$ {totals.cardFee.toFixed(2)}
               </div>
@@ -2016,7 +2017,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
                 </span>
               </div>
               <div className="flex justify-between">
-                <span style={{ color: 'var(--text-muted)' }}>Custo AcessÃ³rios:</span>
+                <span style={{ color: 'var(--text-muted)' }}>Custo Acessórios:</span>
                 <span className="font-medium" style={{ color: 'var(--text-secondary)' }}>
                   R$ {totals.totalAccessoryCost.toFixed(2)}
                 </span>
@@ -2053,7 +2054,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
             className="flex-1 bg-orange-500 px-6 py-4 rounded-lg hover:bg-orange-600 transition-colors font-bold text-xl disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center gap-3"
           >
             <ShoppingCart size={24} />
-            {editSaleId ? 'Salvar AlteraÃ§Ãµes' : 'Confirmar Venda'}
+            {editSaleId ? 'Salvar Alterações' : 'Confirmar Venda'}
           </button>
           {(editSaleId || lastSavedSaleId) && (
             <button
@@ -2068,7 +2069,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
                   Enviando...
                 </>
               ) : (
-                'ðŸ”— Enviar para Bling'
+                '?? Enviar para Bling'
               )}
             </button>
           )}
@@ -2077,7 +2078,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
             onClick={editSaleId ? () => onEditDone?.() : (lastSavedSaleId ? handleNavigateToHistory : resetForm)}
             className="px-8 py-4 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors font-medium"
           >
-            {editSaleId ? 'Cancelar' : (lastSavedSaleId ? 'Ir para HistÃ³rico' : 'Limpar')}
+            {editSaleId ? 'Cancelar' : (lastSavedSaleId ? 'Ir para Histórico' : 'Limpar')}
           </button>
         </div>
       </form>
@@ -2108,16 +2109,16 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
                 <>
                   <p className="text-sm text-gray-400">Cole a mensagem completa do cliente com o formato:</p>
                   <div className="bg-gray-900 rounded p-3 border border-gray-700 text-xs text-gray-500 max-h-32 overflow-y-auto">
-                    <pre className="whitespace-pre-wrap">???NOME COMPLETO: JoÃ£o Silva
+                    <pre className="whitespace-pre-wrap">???NOME COMPLETO: João Silva
 ??CPF: 123.456.789-00
 ??CIDADE: Curitiba
 ??CEP: 80000-000
-??NÃšMERO: 123
+??NÚMERO: 123
 ??CONTATO: (41) 98765-4321
 ?? E-MAIL (ENVIAR NF): joao@email.com
-??FORMA DE PAGAMENTO: CartÃ£o
+??FORMA DE PAGAMENTO: Cartão
 ?? Embalagem para presente? Sim
-?POSSUI RESTRIÃ‡ÃƒO DE HORARIO? ApÃ³s 14h</pre>
+?POSSUI RESTRIÇÃO DE HORARIO? Após 14h</pre>
                   </div>
                   <textarea
                     autoFocus
@@ -2135,7 +2136,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
                 </>
               ) : (
                 <>
-                  <p className="text-sm font-semibold text-orange-400">? Dados ExtraÃ­dos da Mensagem</p>
+                  <p className="text-sm font-semibold text-orange-400">? Dados Extraídos da Mensagem</p>
                   <div className="bg-gray-900 rounded-lg p-4 space-y-3 max-h-96 overflow-y-auto border border-gray-700">
                     {whatsappPreview.customer_name && (
                       <div className="flex justify-between items-start">
@@ -2175,7 +2176,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
                     )}
                     {whatsappPreview.address_number && (
                       <div className="flex justify-between items-start">
-                        <span className="text-gray-400">?? NÃºmero:</span>
+                        <span className="text-gray-400">?? Número:</span>
                         <span className="text-white font-medium">{whatsappPreview.address_number}</span>
                       </div>
                     )}
@@ -2194,12 +2195,12 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
                     {whatsappPreview.gift_wrapping !== undefined && (
                       <div className="flex justify-between items-start">
                         <span className="text-gray-400">?? Embalagem:</span>
-                        <span className="text-white font-medium">{whatsappPreview.gift_wrapping ? '? Sim' : '? NÃ£o'}</span>
+                        <span className="text-white font-medium">{whatsappPreview.gift_wrapping ? '? Sim' : '? Não'}</span>
                       </div>
                     )}
                     {whatsappPreview.delivery_restrictions && (
                       <div className="flex justify-between items-start">
-                        <span className="text-gray-400">? RestriÃ§Ãµes:</span>
+                        <span className="text-gray-400">? Restrições:</span>
                         <span className="text-white font-medium">{whatsappPreview.delivery_restrictions}</span>
                       </div>
                     )}
@@ -2267,6 +2268,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
     </div>
   );
 }
+
 
 
 
