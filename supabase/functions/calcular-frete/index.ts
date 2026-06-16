@@ -13,7 +13,7 @@ serve(async (req) => {
     const body = {
       from: { postal_code: '80010200' },
       to: { postal_code: cep_destino.replace(/\D/g, '') },
-      package: { height: altura || 10, width: largura || 15, length: comprimento || 20, weight: peso || 0.3 },
+      package: { height: altura || 8, width: largura || 12, length: comprimento || 24, weight: peso || 0.4 },
       options: { receipt: false, own_hand: false },
       services: '1,2,17'
     }
@@ -30,4 +30,5 @@ serve(async (req) => {
     return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
   }
 })
+
 
