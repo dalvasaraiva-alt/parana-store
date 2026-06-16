@@ -1516,7 +1516,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
                         placeholder="CEP"
                         maxLength={8}
                         value={formData.zip_code}
-                        onChange={(e) => handleCepChange(e.target.value)}
+                        onChange={(e) => { handleCepChange(e.target.value); calcularFrete(e.target.value); }}
                         className="w-full bg-gray-700 rounded-lg px-4 py-2 border border-gray-600 focus:border-orange-500 focus:outline-none"
                       />
                       {loadingCep && (
@@ -1622,7 +1622,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
                         placeholder="CEP (opcional)"
                         maxLength={8}
                         value={formData.zip_code}
-                        onChange={(e) => handleCepChange(e.target.value)}
+                        onChange={(e) => { handleCepChange(e.target.value); calcularFrete(e.target.value); }}
                         className="w-full bg-gray-700 rounded-lg px-4 py-2 border border-gray-600 focus:border-orange-500 focus:outline-none"
                       />
                       {loadingCep && (
@@ -2286,6 +2286,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
     </div>
   );
 }
+
 
 
 
