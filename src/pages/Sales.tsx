@@ -1535,7 +1535,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
                     />
                   </div>
                   {loadingFrete && <p className="text-orange-400 text-sm">Calculando fretes...</p>}
-                  {fretes.length > 0 && (<div className="bg-gray-900 rounded-lg p-3 border border-gray-700 mt-2"><p className="text-xs text-gray-400 mb-2">Opcoes de envio:</p><div className="space-y-2">{fretes.map((f: any) => (<button key={f.id} type="button" onClick={() => { setFreteSelecionado(f); setFormData({...formData, delivery_fee: Number(f.price)}); }} className={w-full flex justify-between items-center px-3 py-2 rounded-lg text-sm }><span>{f.name}</span><span className="font-bold">R$ {Number(f.price).toFixed(2)}</span></button>))}</div></div>)}
+                  {fretes.length > 0 && (<div className="bg-gray-900 rounded-lg p-3 border border-gray-700 mt-2"><p className="text-xs text-gray-400 mb-2">Opcoes de envio:</p><div className="space-y-2">{fretes.map((f: any) => (<button key={f.id} type="button" onClick={() => { setFreteSelecionado(f); setFormData({...formData, delivery_fee: Number(f.price)}); }} className={`w-full flex justify-between items-center px-3 py-2 rounded-lg text-sm ${freteSelecionado?.id === f.id ? "bg-orange-500 text-white" : "bg-gray-700 text-gray-300"}`}><span>{f.name}</span><span className="font-bold">R$ {Number(f.price).toFixed(2)}</span></button>))}</div></div>)}
                   {cepError && (
                     <p className="text-red-500 text-sm">{cepError}</p>
                   )}
@@ -2288,6 +2288,7 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
     </div>
   );
 }
+
 
 
 
