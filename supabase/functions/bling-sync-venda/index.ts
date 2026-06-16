@@ -45,7 +45,7 @@ serve(async (req) => {
     const r3 = await fetch('https://www.bling.com.br/Api/v3/formas-pagamentos', { headers: { 'Authorization': 'Bearer ' + token } })
     const d3 = await r3.json()
     console.log('Formas pag:', JSON.stringify(d3?.data))
-    const formaPagId = d3?.data?.[0]?.id || 1
+    const formasPagMap: Record<string, number> = { 'pix': 7476368, 'credit_card': 6106744, 'debit_card': 6341196, 'dinheiro': 4826548, 'boleto': 6339170, 'payment_link': 6106744 }; const formaPagNome = venda?.forma_pagamento || 'pix'; const formaPagId = formasPagMap[formaPagNome] || d3?.data?.[0]?.id || 7476368
     await sleep(400)
     const hoje = new Date().toISOString().split('T')[0]
     const payload = { data: hoje, contato: { id: contatoId }, itens: [{ descricao: produto, quantidade: quantidade, valor: valorUnit }], parcelas: [{ dataVencimento: hoje, valor: valorTotal, formaPagamento: { id: formaPagId } }] }
@@ -61,6 +61,8 @@ serve(async (req) => {
     return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
   }
 })
+
+
 
 
 

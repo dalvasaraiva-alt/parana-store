@@ -73,6 +73,9 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
   const [neighborhoodSearch, setNeighborhoodSearch] = useState('');
   const [isHighlighted, setIsHighlighted] = useState(false);
   const [loadingCep, setLoadingCep] = useState(false);
+  const [fretes, setFretes] = useState<any[]>([]);
+  const [loadingFrete, setLoadingFrete] = useState(false);
+  const [freteSelecionado, setFreteSelecionado] = useState<any>(null);
   const [cepError, setCepError] = useState('');
   const [cpfError, setCpfError] = useState('');
   const [cpfDisplay, setCpfDisplay] = useState('');
@@ -915,6 +918,21 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
 
   const handleNavigateToHistory = () => {
     onNavigate?.('history');
+  };
+
+  const calcularFrete = async (cep: string) => {
+    if (cep.replace(/\D/g, '').length !== 8) return;
+    setLoadingFrete(true);
+    try {
+      const res = await fetch('https://lwcvrtjykxnipwkhzyem.supabase.co/functions/v1/calcular-frete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cep_destino: cep })
+      });
+      const data = await res.json();
+      const disponiveis = Array.isArray(data) ? data.filter((f: any) => !f.error && f.price) : [];
+      setFretes(disponiveis);
+    } catch (e) { console.error(e); } finally { setLoadingFrete(false); }
   };
 
   const handleCepChange = async (cep: string) => {
@@ -2268,6 +2286,8 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
     </div>
   );
 }
+
+
 
 
 
