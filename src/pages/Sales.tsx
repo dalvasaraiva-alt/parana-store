@@ -2306,3 +2306,4 @@ export default function Sales({ triggerFastSale, onNavigate, editSaleId, onEditD
 
 
 
+
